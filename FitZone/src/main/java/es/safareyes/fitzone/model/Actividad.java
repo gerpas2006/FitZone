@@ -19,7 +19,7 @@ public class Actividad {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
-    private UUID Id;
+    private UUID id;
 
     @Column(unique = true)
     private String nombre;

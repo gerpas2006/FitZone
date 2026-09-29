@@ -20,15 +20,19 @@ public class Plan {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
-    private UUID Id;
+    private UUID id;
 
     @Column(nullable = false)
      private String nombre;
      private double precioMensual;
+     @Column(name = "incluye_clases")
      private boolean inluyeClases;
      @Enumerated(EnumType.STRING )
      private TipoPlan tipoPlan;
 
     @OneToMany(mappedBy = "plan")
     private List<Socio> socios;
+
+    @OneToMany(mappedBy = "plan")
+    private List<Cuota> cuotas;
 }

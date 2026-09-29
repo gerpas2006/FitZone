@@ -18,7 +18,7 @@ import java.util.UUID;
 public class Socio {
 
     @Id
-    @GeneratedValue(strategy =  GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -51,6 +51,9 @@ public class Socio {
 
     @OneToMany(mappedBy = "socio", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reserva> reservas;
+
+    @OneToOne(mappedBy = "socio")
+    private Usuario usuario;
 
 
 }

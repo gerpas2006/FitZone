@@ -19,7 +19,7 @@ public class Reserva {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
-    private UUID Id;
+    private UUID id;
 
     private LocalDateTime fechaReserva;
 

@@ -19,7 +19,7 @@ import java.util.UUID;
 public class Usuario {
 
     @Id
-    @GeneratedValue(strategy =  GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -34,6 +34,10 @@ public class Usuario {
     private String password;
     @Enumerated(EnumType.STRING)
     private Rol rol;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "socio_id")
+    private Socio socio;
 
 
 

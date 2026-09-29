@@ -17,14 +17,18 @@ import java.util.UUID;
 @AllArgsConstructor
 @Table(name = "cuota")
 public class Cuota {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
-    private UUID Id;
+    private UUID id;
 
     private Integer mes;
     private Integer anio;
     private double importe;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado", nullable = false, length = 20)
     private Estado estado;
     private LocalDateTime fechaPago;
 
@@ -32,5 +36,8 @@ public class Cuota {
     @JoinColumn(name = "socio_id", nullable = false)
     private Socio socio;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "plan_id", nullable = false)
+    private Plan plan;
 
 }

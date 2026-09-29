@@ -1,5 +1,6 @@
 package es.safareyes.fitzone.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,11 +21,15 @@ public class Monitor {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
-    private UUID Id;
+    private UUID id;
 
     @Column(nullable = false)
     private String nombre;
 
+    @Column(name = "apellido")
+    private String apellido;
+
     @OneToMany(mappedBy = "monitor")
+    @JsonIgnore
     private List<Actividad> actividades;
 }
