@@ -1,11 +1,74 @@
 package es.safareyes.fitzone.controller;
 
+import es.safareyes.fitzone.dto.SocioFIltradoDto;
+import es.safareyes.fitzone.dto.SocioResponseDto;
+import es.safareyes.fitzone.model.Estado;
+import es.safareyes.fitzone.service.SocioService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/socio")
 @RequiredArgsConstructor
 public class SocioController {
+
+    private final SocioService socioService;
+
+
+    @GetMapping("/buscar/dni/{dni}")
+    public ResponseEntity<SocioResponseDto> buscarPorDni(@PathVariable String dni){
+            return ResponseEntity.ok(SocioResponseDto.of(socioService.findByDni(dni)));
+    }
+
+    @GetMapping("/buscar/nombre/{nombre}")
+    public ResponseEntity<List<SocioResponseDto>> buscarPorNombre(
+            @PathVariable String nombre
+    ) {
+        List<SocioResponseDto> socios = socioService.buscarSocioPorNombre(nombre)
+                .stream()
+                .map(SocioResponseDto::of)
+                .toList();
+
+        return ResponseEntity.ok(socios);
+    }
+
+
+    @GetMapping("/filtrar")
+    public ResponseEntity<Page<SocioResponseDto>> filtrarSocios(
+            @PageableDefault(
+                    size = 10,
+                    page = 0,
+                    direction = Sort.Direction.ASC,
+                    sort = "fechaAlta"
+            ) Pageable pageable,
+            @RequestParam(required = false) Estado estado,
+            @RequestParam(required = false) LocalDate fechaInicio,
+            @RequestParam(required = false) LocalDate fechaFin,
+            @RequestParam(required = false) UUID planId
+    ) {
+        SocioFIltradoDto filtro = new SocioFIltradoDto(
+                estado,
+                fechaInicio,
+                fechaFin,
+                planId
+        );
+
+        Page<SocioResponseDto> resultado = socioService
+                .filtrar(pageable, filtro)
+                .map(SocioResponseDto::of);
+
+        return ResponseEntity.ok(resultado);
+    }
+
+
+
 }

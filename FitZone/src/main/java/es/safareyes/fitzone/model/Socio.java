@@ -55,5 +55,4 @@ public class Socio {
     @OneToOne(mappedBy = "socio")
     private Usuario usuario;
 
-
 }

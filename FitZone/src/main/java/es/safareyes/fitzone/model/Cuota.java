@@ -29,7 +29,7 @@ public class Cuota {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false, length = 20)
-    private Estado estado;
+    private EstadoCuota estadoCuota;
     private LocalDateTime fechaPago;
 
     @ManyToOne(fetch = FetchType.LAZY)
