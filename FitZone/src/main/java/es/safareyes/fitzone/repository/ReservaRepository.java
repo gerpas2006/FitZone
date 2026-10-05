@@ -17,6 +17,8 @@ public interface ReservaRepository extends JpaRepository<Reserva, UUID> {
             LocalDateTime fecha
     );
 
+    boolean existsBySocioIdAndActividadId(UUID socioId, UUID actividadId);
+
     @Query("""
             SELECT COUNT(r)
             FROM Reserva r

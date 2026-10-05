@@ -17,11 +17,9 @@ public interface ActividadRepository extends JpaRepository<Actividad, UUID> {
         SELECT a
         FROM Actividad a
         WHERE a.fechaHora >= :inicio
-          AND a.fechaHora < :fin
         ORDER BY a.fechaHora
         """)
     List<Actividad> findActividadesDelDia(
-            @Param("inicio") LocalDateTime inicio,
-            @Param("fin") LocalDateTime fin
+            @Param("inicio") LocalDateTime inicio
     );
 }

@@ -15,6 +15,13 @@ import java.util.UUID;
 @Repository
 public interface CuotaRepository extends JpaRepository<Cuota, UUID> {
 
+    boolean existsBySocioIdAndMesAndAnioAndEstadoCuota(
+            UUID socioId,
+            Integer mes,
+            Integer anio,
+            EstadoCuota estadoCuota
+    );
+
     boolean existsBySocioIdAndMesAndAnio(
             UUID socioId,
             Integer mes,
