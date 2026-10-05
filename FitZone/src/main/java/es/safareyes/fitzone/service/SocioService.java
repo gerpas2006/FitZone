@@ -101,7 +101,7 @@ public class SocioService {
         }else {
             socioBuscado.setEstado(Estado.ACTIVO);
         }
-        return socioBuscado;
+        return socioRepository.save(socioBuscado);
     }
 
     public Page<Cuota> obtenerHistorialPorSocio(
