@@ -4,10 +4,7 @@ import es.safareyes.fitzone.dto.AccesoResponseDto;
 import es.safareyes.fitzone.service.AccesoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/acceso")
@@ -17,8 +14,21 @@ public class AccesoController {
     private final AccesoService accesoService;
 
     @PostMapping("/entrada/{dni}")
-    public ResponseEntity<Boolean> tornoEntrada(@PathVariable String dni){
-        boolean resultado = accesoService.tornoEntrada(dni);
-        return ResponseEntity.ok(resultado);
+    public ResponseEntity<AccesoResponseDto> tornoEntrada(@PathVariable String dni) {
+        return ResponseEntity.ok(
+                AccesoResponseDto.of(accesoService.tornoEntrada(dni))
+        );
+    }
+
+    @PostMapping("/salida/{dni}")
+    public ResponseEntity<AccesoResponseDto> tornoSalida(@PathVariable String dni) {
+        return ResponseEntity.ok(
+                AccesoResponseDto.of(accesoService.tornoSalida(dni))
+        );
+    }
+
+    @GetMapping("/contar/aforo")
+    public ResponseEntity<Long> contarAforo(){
+        return ResponseEntity.ok(accesoService.personaDentroGym());
     }
 }

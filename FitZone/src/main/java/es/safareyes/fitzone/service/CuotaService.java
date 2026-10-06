@@ -1,5 +1,6 @@
 package es.safareyes.fitzone.service;
 
+import es.safareyes.fitzone.dto.IngresosPorMesPlan;
 import es.safareyes.fitzone.model.Cuota;
 import es.safareyes.fitzone.model.EstadoCuota;
 import es.safareyes.fitzone.repository.CuotaRepository;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -34,6 +36,14 @@ public class CuotaService {
         cuota.setFechaPago(LocalDateTime.now());
 
         return cuotaRepository.save(cuota);
+    }
+
+
+    @Transactional
+    public List<IngresosPorMesPlan> obtenerIngresosPorMesYPlan(
+            Integer anio
+    ) {
+        return cuotaRepository.obtenerIngresosPorMesYPlan(anio);
     }
 
 }

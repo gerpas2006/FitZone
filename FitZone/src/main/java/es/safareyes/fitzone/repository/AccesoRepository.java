@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,7 +23,11 @@ public interface AccesoRepository extends JpaRepository<Acceso, UUID> {
     @Query("SELECT a FROM Acceso a WHERE a.socio = :socio AND a.fechaHoraSalida IS NULL")
     Optional<Acceso> findBySocioAndFechaHoraSalidaIsNull(@Param("socio") Socio socio);
 
+    Optional<Acceso> findFirstBySocioAndResultadoTrueAndFechaHoraSalidaIsNullOrderByFechaHoraEntradaDesc(
+            Socio socio
+    );
 
+    boolean existsBySocioAndResultadoTrueAndFechaHoraSalidaIsNull(Socio socio);
 
 
 }

@@ -20,50 +20,62 @@ public class AccesoService {
     private final AccesoRepository accesoRepository;
     private final SocioRepository socioRepository;
 
-    public boolean tornoEntrada(String dni) {
+    public Acceso tornoEntrada(String dni) {
         Socio socioBuscado = socioRepository.findByDni(dni)
-                .orElseThrow(() -> new EntityNotFoundException("No se ha encontrado el socio con ese DNI"));
-
-        if (!socioBuscado.getEstado().equals(Estado.ACTIVO)) {
-            return false;
-        }
-
-        if (socioBuscado.getCuotas().equals(EstadoCuota.PENDIENTE)) {
-            return false;
-        }
-
-        long aforoActual = accesoRepository.countByResultadoTrueAndFechaHoraSalidaIsNull();
-        if (aforoActual >= 150) {
-            return false;
-        }
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "No se ha encontrado el socio con ese DNI"
+                ));
 
         Acceso nuevoAcceso = new Acceso();
         nuevoAcceso.setSocio(socioBuscado);
         nuevoAcceso.setFechaHoraEntrada(LocalDateTime.now());
-        nuevoAcceso.setResultado(true);
         nuevoAcceso.setFechaHoraSalida(null);
+        nuevoAcceso.setResultado(false);
 
-        accesoRepository.save(nuevoAcceso);
-
-        return true;
-    }
-
-    public boolean tornoSalida(String dni) {
-        Socio socioBuscado = socioRepository.findByDni(dni)
-                .orElseThrow(() -> new EntityNotFoundException("No se ha encontrado el socio con ese DNI"));
-
-        Optional<Acceso> accesoOpt = accesoRepository.findBySocioAndFechaHoraSalidaIsNull(socioBuscado);
-
-        if (accesoOpt.isEmpty()) {
-            return false;
+        if (socioBuscado.getEstado() != Estado.ACTIVO) {
+            nuevoAcceso.setMotivoRechazo("El socio está inactivo");
+            return accesoRepository.save(nuevoAcceso);
         }
 
-        Acceso accesoExistente = accesoOpt.get();
+        if (socioBuscado.getCuotas().equals(EstadoCuota.PENDIENTE)) {
+            nuevoAcceso.setMotivoRechazo("El socio tiene cuotas pendientes");
+            return accesoRepository.save(nuevoAcceso);
+        }
+
+        long aforoActual = accesoRepository.countByResultadoTrueAndFechaHoraSalidaIsNull();
+
+        if (aforoActual >= 150) {
+            nuevoAcceso.setMotivoRechazo("El aforo está completo");
+            return accesoRepository.save(nuevoAcceso);
+        }
+
+        if (accesoRepository.existsBySocioAndResultadoTrueAndFechaHoraSalidaIsNull(socioBuscado)) {
+            nuevoAcceso.setMotivoRechazo("El socio ya se encuentra dentro del gimnasio");
+            return accesoRepository.save(nuevoAcceso);
+        }
+        nuevoAcceso.setResultado(true);
+        nuevoAcceso.setMotivoRechazo(null);
+
+        return accesoRepository.save(nuevoAcceso);
+    }
+
+    public Acceso tornoSalida(String dni) {
+        Socio socioBuscado = socioRepository.findByDni(dni)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "No se ha encontrado el socio con ese DNI"
+                ));
+
+        Acceso accesoExistente = accesoRepository
+                .findFirstBySocioAndResultadoTrueAndFechaHoraSalidaIsNullOrderByFechaHoraEntradaDesc(
+                        socioBuscado
+                )
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "El socio no se encuentra dentro del gimnasio"
+                ));
+
         accesoExistente.setFechaHoraSalida(LocalDateTime.now());
 
-        accesoRepository.save(accesoExistente);
-
-        return true;
+        return accesoRepository.save(accesoExistente);
     }
 
     public long personaDentroGym(){
