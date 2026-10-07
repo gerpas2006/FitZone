@@ -20,7 +20,9 @@ public class Acceso {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
+    @Column(name = "fecha_hora_entrada")
     private LocalDateTime fechaHoraEntrada;
+    @Column(name = "fecha_hora_salida")
     private LocalDateTime fechaHoraSalida;
 
     private boolean resultado;

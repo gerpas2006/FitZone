@@ -2,6 +2,7 @@ package es.safareyes.fitzone.service;
 
 import es.safareyes.fitzone.dto.SocioEditarDto;
 import es.safareyes.fitzone.dto.SocioFIltradoDto;
+import es.safareyes.fitzone.dto.SocioMorosoResponseDto;
 import es.safareyes.fitzone.filter.SocioFilter;
 import es.safareyes.fitzone.model.*;
 import es.safareyes.fitzone.repository.CuotaRepository;
@@ -111,11 +112,22 @@ public class SocioService {
         return cuotaRepository.findBySocio_Id(socioId, pageable);
     }
 
-    public List<Socio> obtenerSociosMorosos(Integer mes, Integer anio) {
-        List<Socio> listaMorosos = socioRepository.findSociosConCuotaPendiente(mes, anio);
-        if (listaMorosos.isEmpty()){
-            throw new EntityNotFoundException("Muy bien no hay morosos a la vista");
+    public List<SocioMorosoResponseDto> obtenerSociosMorosos(
+            Integer mes,
+            Integer anio
+    ) {
+        List<SocioMorosoResponseDto> listaMorosos = socioRepository
+                .findSociosConCuotaPendiente(mes, anio)
+                .stream()
+                .map(SocioMorosoResponseDto::of)
+                .toList();
+
+        if (listaMorosos.isEmpty()) {
+            throw new EntityNotFoundException(
+                    "Muy bien, no hay morosos a la vista"
+            );
         }
+
         return listaMorosos;
     }
 

@@ -1,9 +1,6 @@
 package es.safareyes.fitzone.controller;
 
-import es.safareyes.fitzone.dto.CuotaResponseDto;
-import es.safareyes.fitzone.dto.SocioEditarDto;
-import es.safareyes.fitzone.dto.SocioFIltradoDto;
-import es.safareyes.fitzone.dto.SocioResponseDto;
+import es.safareyes.fitzone.dto.*;
 import es.safareyes.fitzone.model.Estado;
 import es.safareyes.fitzone.service.SocioService;
 import lombok.RequiredArgsConstructor;
@@ -99,10 +96,13 @@ public class SocioController {
     }
 
     @GetMapping("/cuotas/pendientes")
-    public ResponseEntity<List<SocioResponseDto>> listaMorosos(@RequestParam Integer mes,@RequestParam Integer anio){
-        List<SocioResponseDto> listaSocio = socioService.obtenerSociosMorosos(mes,anio)
-                .stream().map(SocioResponseDto::of).toList();
-        return ResponseEntity.ok(listaSocio);
+    public ResponseEntity<List<SocioMorosoResponseDto>> listaMorosos(
+            @RequestParam Integer mes,
+            @RequestParam Integer anio
+    ) {
+        return ResponseEntity.ok(
+                socioService.obtenerSociosMorosos(mes, anio)
+        );
     }
 
 

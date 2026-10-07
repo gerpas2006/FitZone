@@ -51,4 +51,9 @@ public interface CuotaRepository extends JpaRepository<Cuota, UUID> {
             @Param("anio") Integer anio
     );
 
+    long countBySocioIdAndEstadoCuota(
+            UUID socioId,
+            EstadoCuota estadoCuota
+    );
+
 }

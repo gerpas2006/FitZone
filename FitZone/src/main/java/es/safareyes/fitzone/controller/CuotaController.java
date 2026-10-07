@@ -1,6 +1,7 @@
 package es.safareyes.fitzone.controller;
 
 import es.safareyes.fitzone.dto.CuotaResponseDto;
+import es.safareyes.fitzone.dto.GenerarCuotasResponse;
 import es.safareyes.fitzone.dto.IngresosPorMesPlan;
 import es.safareyes.fitzone.model.Cuota;
 import es.safareyes.fitzone.service.CuotaService;
@@ -30,6 +31,16 @@ public class CuotaController {
     ) {
         return ResponseEntity.ok(
                 cuotaService.obtenerIngresosPorMesYPlan(anio)
+        );
+    }
+
+    @PostMapping("/generar")
+    public ResponseEntity<GenerarCuotasResponse> generarCuotas(
+            @RequestParam Integer mes,
+            @RequestParam Integer anio
+    ) {
+        return ResponseEntity.ok(
+                cuotaService.generarCuotas(mes, anio)
         );
     }
 

@@ -4,6 +4,7 @@ import es.safareyes.fitzone.model.Estado;
 import es.safareyes.fitzone.model.Plan;
 import es.safareyes.fitzone.model.Socio;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -23,14 +24,15 @@ public interface SocioRepository extends JpaRepository<Socio, UUID>, JpaSpecific
 
     boolean existsByEmailIgnoreCase(String email);
 
+    @EntityGraph(attributePaths = {"cuotas", "plan"})
     @Query("""
-            SELECT DISTINCT c.socio
-            FROM Cuota c
-            JOIN c.socio s
-            WHERE c.mes = :mes
-              AND c.anio = :anio
-              AND c.estadoCuota = EstadoCuota.PENDIENTE
-            """)
+        SELECT DISTINCT c.socio
+        FROM Cuota c
+        JOIN c.socio s
+        WHERE c.mes = :mes
+          AND c.anio = :anio
+          AND c.estadoCuota = EstadoCuota.PENDIENTE
+        """)
     List<Socio> findSociosConCuotaPendiente(
             @Param("mes") Integer mes,
             @Param("anio") Integer anio
