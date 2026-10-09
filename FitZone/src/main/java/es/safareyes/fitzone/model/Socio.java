@@ -22,20 +22,22 @@ public class Socio {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(unique = true)
+    @Column(name = "dni", unique = true)
     private String dni;
-    @Column(nullable = false)
+    @Column(name = "nombre", nullable = false)
     private String nombre;
-    @Column(nullable = false)
+    @Column(name = "apellidos", nullable = false)
     private  String apellidos;
-    @Column(unique = true)
+    @Column(name = "email", unique = true)
     private String email;
-    @Column(unique = true)
+    @Column(name = "telefono", unique = true)
     private String telefono;
 
+    @Column(name = "fecha_alta")
     private LocalDate fechaAlta;
-    @Column(unique = true)
+    @Column(name = "matricula", unique = true)
     private String matricula;
+    @Column(name = "estado")
     @Enumerated(EnumType.STRING)
     private Estado estado;
 

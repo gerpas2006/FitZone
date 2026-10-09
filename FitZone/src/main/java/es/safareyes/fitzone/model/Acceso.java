@@ -25,9 +25,12 @@ public class Acceso {
     @Column(name = "fecha_hora_salida")
     private LocalDateTime fechaHoraSalida;
 
+    @Column(name = "resultado")
     private boolean resultado;
 
+    @Column(name = "motivo_rechazo")
     private String motivoRechazo;
+    @Column(name = "bonificacion_parking_aplicada")
     private boolean bonificacionParkingAplicada;
 
     @ManyToOne(fetch = FetchType.LAZY)

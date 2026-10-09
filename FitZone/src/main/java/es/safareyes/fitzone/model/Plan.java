@@ -22,11 +22,13 @@ public class Plan {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(nullable = false)
+     @Column(name =  "nombre", nullable = false)
      private String nombre;
+     @Column(name = "precio_mensual")
      private double precioMensual;
      @Column(name = "incluye_clases")
      private boolean inluyeClases;
+     @Column(name = "tipo_plan")
      @Enumerated(EnumType.STRING )
      private TipoPlan tipoPlan;
 

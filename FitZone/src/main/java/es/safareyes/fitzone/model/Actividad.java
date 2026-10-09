@@ -24,9 +24,13 @@ public class Actividad {
     @Column(unique = true)
     private String nombre;
 
+    @Column(name = "fecha_hora")
     private LocalDateTime fechaHora;
+    @Column(name = "duracion_minutos")
     private Integer duracionMinutos;
+    @Column(name = "sala")
     private String sala;
+    @Column(name = "aforo_maximo")
     private Integer aforoMaximo;
 
     @ManyToOne(fetch = FetchType.LAZY)

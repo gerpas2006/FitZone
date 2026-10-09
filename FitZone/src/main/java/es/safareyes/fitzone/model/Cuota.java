@@ -24,13 +24,17 @@ public class Cuota {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
+    @Column(name = "mes")
     private Integer mes;
+    @Column(name = "anio")
     private Integer anio;
+    @Column(name = "importe")
     private double importe;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false, length = 20)
     private EstadoCuota estadoCuota;
+    @Column(name = "fecha_pago")
     private LocalDateTime fechaPago;
 
     @ManyToOne(fetch = FetchType.LAZY)

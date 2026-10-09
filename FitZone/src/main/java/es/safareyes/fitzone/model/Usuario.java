@@ -23,15 +23,16 @@ public class Usuario {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    @Column(nullable = false)
+    @Column(name = "apellidos", nullable = false)
     private String apellidos;
-    @Column(unique = true)
+    @Column(name = "username", unique = true)
     private String username;
-    @Column(nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
+    @Column(name = "rol")
     @Enumerated(EnumType.STRING)
     private Rol rol;
 

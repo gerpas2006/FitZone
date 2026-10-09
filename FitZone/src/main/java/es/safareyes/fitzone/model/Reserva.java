@@ -21,6 +21,7 @@ public class Reserva {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
+    @Column(name = "fecha_reserva")
     private LocalDateTime fechaReserva;
 
     @ManyToOne(fetch = FetchType.LAZY)
