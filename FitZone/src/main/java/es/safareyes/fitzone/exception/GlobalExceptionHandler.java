@@ -6,6 +6,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -147,4 +148,15 @@ public class GlobalExceptionHandler {
                 mensaje
         );
     }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> manejarAccesoDenegado(
+            AccessDeniedException exception
+    ) {
+        return respuesta(
+                HttpStatus.FORBIDDEN,
+                "No tienes permisos para acceder a este recurso"
+        );
+    }
+
 }

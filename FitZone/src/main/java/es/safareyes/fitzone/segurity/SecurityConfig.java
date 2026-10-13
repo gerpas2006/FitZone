@@ -57,7 +57,10 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .cors(cors -> {
                     CorsConfiguration configuration = new CorsConfiguration();
-                    configuration.setAllowedOrigins(List.of("http://localhost:8080"));
+
+                    configuration.setAllowedOrigins(
+                            List.of("http://localhost:8080")
+                    );
                     configuration.setAllowedMethods(
                             List.of("GET", "POST", "PUT", "DELETE", "PATCH")
                     );
@@ -72,11 +75,54 @@ public class SecurityConfig {
                 })
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/error").permitAll()
+
+                        // No necesitan usuario logueado
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/v1/auth/register",
-                                "/api/v1/auth/login"
+                                "/api/v1/auth/login",
+                                "/api/v1/acceso/entrada/**",
+                                "/api/v1/acceso/salida/**"
                         ).permitAll()
+
+                        // Requieren login y además rol ADMIN o RECEPCION
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/cuota/pagar/**"
+                        ).hasAnyRole("ADMIN", "RECEPCION", "SOCIO")
+
+                        // Requieren login y además rol ADMIN
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/cuota/informes/**",
+                                "/api/v1/socio/cuotas/pendientes"
+                        ).hasRole("ADMIN")
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/cuota/todas-las-cuotas"
+                        )
+                        .hasAnyRole("ADMIN", "RECEPCION")
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/lista/planes"
+                        )
+                        .hasAnyRole("ADMIN", "RECEPCION", "SOCIO")
+
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/cuota/generar"
+                        ).hasRole("ADMIN")
+
+                        // Requieren login y además rol ADMIN o RECEPCION
+                        .requestMatchers("/api/v1/socio/**")
+                        .hasAnyRole("ADMIN", "RECEPCION")
+
+                        .requestMatchers("/api/v1/actividad/**")
+                        .hasAnyRole("ADMIN", "SOCIO")
+
+                        // Todos los demás endpoints requieren estar logueado
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
