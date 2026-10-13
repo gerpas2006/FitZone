@@ -24,4 +24,6 @@ public class PlanController {
                 .stream().map(PlanResponseDto::of).toList();
         return ResponseEntity.ok(listaPlanes);
     }
+
+    
 }

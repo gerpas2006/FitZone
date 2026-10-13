@@ -56,4 +56,18 @@ public interface CuotaRepository extends JpaRepository<Cuota, UUID> {
             EstadoCuota estadoCuota
     );
 
+
+
+    @EntityGraph(attributePaths = {"socio", "plan"})
+    List<Cuota> findBySocio_Usuario_Id(UUID usuarioId);
+
+    @Query("""
+        SELECT c
+        FROM Cuota c
+        JOIN FETCH c.socio
+        JOIN FETCH c.plan
+        ORDER BY c.anio DESC, c.mes DESC
+        """)
+    List<Cuota> findAllWithSocioAndPlan();
+
 }

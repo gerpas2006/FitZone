@@ -4,9 +4,11 @@ import es.safareyes.fitzone.dto.CuotaResponseDto;
 import es.safareyes.fitzone.dto.GenerarCuotasResponse;
 import es.safareyes.fitzone.dto.IngresosPorMesPlan;
 import es.safareyes.fitzone.model.Cuota;
+import es.safareyes.fitzone.model.Usuario;
 import es.safareyes.fitzone.service.CuotaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +46,30 @@ public class CuotaController {
         );
     }
 
+    @GetMapping("/mis-cuotas")
+    public ResponseEntity<List<CuotaResponseDto>> listarMisCuotas(
+            @AuthenticationPrincipal Usuario usuario
+    ) {
+        List<CuotaResponseDto> cuotas = cuotaService
+                .listarMisCuotas(usuario)
+                .stream()
+                .map(CuotaResponseDto::of)
+                .toList();
+
+        return ResponseEntity.ok(cuotas);
+    }
+
+    @GetMapping("/todas-las-cuotas")
+    public ResponseEntity<List<CuotaResponseDto>> listarTodasLasCuotas(){
+
+        List<CuotaResponseDto> cuotas = cuotaService
+                .listarTodasLasCuotas()
+                .stream()
+                .map(CuotaResponseDto::of)
+                .toList();
+
+        return ResponseEntity.ok(cuotas);
+    }
 
 
 

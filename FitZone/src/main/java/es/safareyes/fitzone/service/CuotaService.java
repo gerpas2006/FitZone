@@ -2,15 +2,13 @@ package es.safareyes.fitzone.service;
 
 import es.safareyes.fitzone.dto.GenerarCuotasResponse;
 import es.safareyes.fitzone.dto.IngresosPorMesPlan;
-import es.safareyes.fitzone.model.Cuota;
-import es.safareyes.fitzone.model.Estado;
-import es.safareyes.fitzone.model.EstadoCuota;
-import es.safareyes.fitzone.model.Socio;
+import es.safareyes.fitzone.model.*;
 import es.safareyes.fitzone.repository.CuotaRepository;
 import es.safareyes.fitzone.repository.SocioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,6 +21,25 @@ public class CuotaService {
 
     private final CuotaRepository cuotaRepository;
     private final SocioRepository socioRepository;
+
+
+    @Transactional
+    public List<Cuota> listarMisCuotas(Usuario usuario) {
+        List<Cuota> lista = cuotaRepository.findBySocio_Usuario_Id(usuario.getId());
+        if (lista.isEmpty()){
+            throw new EntityNotFoundException("No tienes cuotas disponibles");
+        }
+        return lista;
+    }
+
+    @Transactional
+    public List<Cuota> listarTodasLasCuotas(){
+        List<Cuota> lista = cuotaRepository.findAllWithSocioAndPlan();
+        if (lista.isEmpty()){
+            throw new EntityNotFoundException("No hay ninguna cuota registrada");
+        }
+        return lista;
+    }
 
     @Transactional
     public Cuota registrarPago(UUID cuotaId) {
