@@ -12,27 +12,29 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.time.LocalDate;
 import java.util.List;
-
 
 @Configuration
 @EnableMethodSecurity
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtAuthenticationFilter authenticationFilter;
@@ -46,74 +48,105 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .exceptionHandling(
-                        except->
-                                except
-                                        .accessDeniedHandler(jwtAccessDeniedHandler)
-                                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler(jwtAccessDeniedHandler)
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
-                .cors(corfConf -> {
+                .cors(cors -> {
                     CorsConfiguration configuration = new CorsConfiguration();
                     configuration.setAllowedOrigins(List.of("http://localhost:8080"));
-                    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH"));
-                    configuration.setAllowedHeaders(List.of(
-                            "*"
-                    ));
+                    configuration.setAllowedMethods(
+                            List.of("GET", "POST", "PUT", "DELETE", "PATCH")
+                    );
+                    configuration.setAllowedHeaders(List.of("*"));
                     configuration.setAllowCredentials(true);
-                    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+                    UrlBasedCorsConfigurationSource source =
+                            new UrlBasedCorsConfigurationSource();
+
                     source.registerCorsConfiguration("/**", configuration);
-                    corfConf.configurationSource(source);
+                    cors.configurationSource(source);
+                })
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/error").permitAll()
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/auth/register",
+                                "/api/v1/auth/login"
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(
+                        authenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                );
 
-
-                });
-
-        http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/error").permitAll()
-                .requestMatchers(
-                        HttpMethod.POST,
-                        "/api/v1/auth/register",
-                        "/api/v1/auth/login"
-                ).permitAll()
-                .anyRequest().authenticated()
-        );
-        http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
-
-
     }
+
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
+    UserDetailsService userDetailsService() {
+        return username -> usuarioRepository.findByUsername(username)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(
+                                "Usuario no encontrado: " + username
+                        )
+                );
     }
 
+    @Bean
+    AuthenticationProvider authenticationProvider(
+            UserDetailsService userDetailsService
+    ) {
+        DaoAuthenticationProvider provider =
+                new DaoAuthenticationProvider(userDetailsService);
+
+        provider.setPasswordEncoder(passwordEncoder);
+
+        return provider;
+    }
+
+    @Bean
+    AuthenticationManager authenticationManager(
+            AuthenticationProvider authenticationProvider
+    ) {
+        return new ProviderManager(authenticationProvider);
+    }
 
     @PostConstruct
     void init() {
         if (usuarioRepository.count() == 0) {
             usuarioRepository.save(Usuario.builder()
                     .username("admin")
+                    .apellidos("admin")
                     .nombre("Admin Principal")
                     .password(passwordEncoder.encode("admin123"))
                     .rol(Rol.ADMIN)
                     .build());
+
             usuarioRepository.save(Usuario.builder()
                     .username("angel")
-                    .nombre("Ángel Naranjo")
+                    .nombre("Ángel")
+                    .apellidos("Naranjo")
                     .password(passwordEncoder.encode("angel123thebest"))
                     .rol(Rol.ADMIN)
                     .build());
+
             usuarioRepository.save(Usuario.builder()
                     .username("luismi")
-                    .nombre("Luismi López")
+                    .nombre("Luismi")
+                    .apellidos("López")
                     .password(passwordEncoder.encode("luismi123ermejo"))
                     .rol(Rol.ADMIN)
                     .build());
+
             usuarioRepository.save(Usuario.builder()
                     .username("miguel")
-                    .nombre("Miguel Campos")
+                    .nombre("Miguel")
+                    .apellidos("Campos")
                     .password(passwordEncoder.encode("bocataManoloYa"))
                     .rol(Rol.ADMIN)
                     .build());
@@ -121,11 +154,10 @@ public class SecurityConfig {
             usuarioRepository.save(Usuario.builder()
                     .username("user")
                     .nombre("Pedro")
+                    .apellidos("Serrano")
                     .password(passwordEncoder.encode("user123"))
                     .rol(Rol.SOCIO)
                     .build());
         }
     }
-
-
 }

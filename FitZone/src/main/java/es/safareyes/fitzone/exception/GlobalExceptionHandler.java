@@ -6,10 +6,12 @@ import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.Map;
@@ -120,5 +122,29 @@ public class GlobalExceptionHandler {
         }
 
         return respuesta(HttpStatus.CONFLICT, mensaje);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Map<String, Object>> manejarCredencialesIncorrectas(
+            BadCredentialsException exception
+    ) {
+        return respuesta(
+                HttpStatus.UNAUTHORIZED,
+                "El usuario o la contraseña son incorrectos"
+        );
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<Map<String, Object>> manejarExcepcionDeEstado(
+            ResponseStatusException exception
+    ) {
+        String mensaje = exception.getReason() != null
+                ? exception.getReason()
+                : "La operación no se ha podido completar";
+
+        return respuesta(
+                HttpStatus.valueOf(exception.getStatusCode().value()),
+                mensaje
+        );
     }
 }

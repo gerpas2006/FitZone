@@ -33,14 +33,18 @@ public class AuthService {
     @Transactional
     public JwtUserResponse register (RegisterRequest request) {
 
-        if (usuarioRepository.existsByUsername(request.username())){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El nombre de usuario ya existe");
+        if (usuarioRepository.existsByUsername(request.username())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "El nombre de usuario ya existe"
+            );
         }
 
         Usuario user = Usuario.builder()
                 .username(request.username())
                 .password(passwordEncoder.encode(request.password()))
                 .nombre(request.nombre())
+                .apellidos(request.apellidos())
                 .rol(Rol.SOCIO)
                 .build();
 
