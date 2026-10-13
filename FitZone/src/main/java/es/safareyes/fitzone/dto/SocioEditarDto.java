@@ -1,5 +1,6 @@
 package es.safareyes.fitzone.dto;
 
+import es.safareyes.fitzone.validation.DniValido;
 import jakarta.validation.constraints.Email;
 
 import java.util.UUID;

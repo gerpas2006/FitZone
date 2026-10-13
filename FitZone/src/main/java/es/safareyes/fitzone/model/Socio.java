@@ -1,6 +1,9 @@
 package es.safareyes.fitzone.model;
 
+import es.safareyes.fitzone.validation.DniValido;
+import es.safareyes.fitzone.validation.MatriculaValida;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -22,12 +25,14 @@ public class Socio {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
+    @DniValido
     @Column(name = "dni", unique = true)
     private String dni;
     @Column(name = "nombre", nullable = false)
     private String nombre;
     @Column(name = "apellidos", nullable = false)
     private  String apellidos;
+    @Email
     @Column(name = "email", unique = true)
     private String email;
     @Column(name = "telefono", unique = true)
@@ -35,6 +40,7 @@ public class Socio {
 
     @Column(name = "fecha_alta")
     private LocalDate fechaAlta;
+    @MatriculaValida
     @Column(name = "matricula", unique = true)
     private String matricula;
     @Column(name = "estado")
