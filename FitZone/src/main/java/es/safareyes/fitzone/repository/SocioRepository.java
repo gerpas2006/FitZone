@@ -19,13 +19,12 @@ import org.springframework.data.domain.Page;
 @Repository
 public interface SocioRepository extends JpaRepository<Socio, UUID>, JpaSpecificationExecutor<Socio> {
 
+    @EntityGraph(attributePaths = {"usuario", "plan"})
     Optional<Socio> findByDni(String dni);
-    List<Socio> findByNombre(String nombre);
-
+    List<Socio> findByUsuario_NombreContainingIgnoreCase(String nombre);
     boolean existsByEmailIgnoreCase(String email);
 
-    @EntityGraph(attributePaths = {"cuotas", "plan"})
-    @Query("""
+    @EntityGraph(attributePaths = {"cuotas", "plan", "usuario"})    @Query("""
         SELECT DISTINCT c.socio
         FROM Cuota c
         JOIN c.socio s

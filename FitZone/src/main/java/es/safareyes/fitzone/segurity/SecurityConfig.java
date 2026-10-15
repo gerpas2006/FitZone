@@ -76,22 +76,31 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/error").permitAll()
 
-                        // No necesitan usuario logueado
+                        // Login y control de acceso sin autenticación
                         .requestMatchers(
                                 HttpMethod.POST,
-                                "/api/v1/auth/register",
                                 "/api/v1/auth/login",
                                 "/api/v1/acceso/entrada/**",
                                 "/api/v1/acceso/salida/**"
                         ).permitAll()
 
-                        // Requieren login y además rol ADMIN o RECEPCION
+                        // Recepción o administrador crean socios y su usuario
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/auth/register/socio"
+                        ).hasAnyRole("ADMIN", "RECEPCION")
+
+                        // Solo el administrador crea usuarios internos
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/auth/register/usuario"
+                        ).hasRole("ADMIN")
+
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/v1/cuota/pagar/**"
                         ).hasAnyRole("ADMIN", "RECEPCION", "SOCIO")
 
-                        // Requieren login y además rol ADMIN
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/v1/cuota/informes/**",
@@ -101,28 +110,24 @@ public class SecurityConfig {
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/v1/cuota/todas-las-cuotas"
-                        )
-                        .hasAnyRole("ADMIN", "RECEPCION")
+                        ).hasAnyRole("ADMIN", "RECEPCION")
 
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/v1/lista/planes"
-                        )
-                        .hasAnyRole("ADMIN", "RECEPCION", "SOCIO")
+                        ).hasAnyRole("ADMIN", "RECEPCION", "SOCIO")
 
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/v1/cuota/generar"
                         ).hasRole("ADMIN")
 
-                        // Requieren login y además rol ADMIN o RECEPCION
                         .requestMatchers("/api/v1/socio/**")
                         .hasAnyRole("ADMIN", "RECEPCION")
 
                         .requestMatchers("/api/v1/actividad/**")
                         .hasAnyRole("ADMIN", "SOCIO")
 
-                        // Todos los demás endpoints requieren estar logueado
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

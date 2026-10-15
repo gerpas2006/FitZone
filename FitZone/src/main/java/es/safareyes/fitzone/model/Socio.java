@@ -28,10 +28,6 @@ public class Socio {
     @DniValido
     @Column(name = "dni", unique = true)
     private String dni;
-    @Column(name = "nombre", nullable = false)
-    private String nombre;
-    @Column(name = "apellidos", nullable = false)
-    private  String apellidos;
     @Email
     @Column(name = "email", unique = true)
     private String email;
