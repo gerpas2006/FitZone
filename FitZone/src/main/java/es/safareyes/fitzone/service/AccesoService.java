@@ -8,7 +8,9 @@ import es.safareyes.fitzone.repository.AccesoRepository;
 import es.safareyes.fitzone.repository.SocioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,24 +36,24 @@ public class AccesoService {
         nuevoAcceso.setResultado(false);
 
         if (socioBuscado.getEstado() != Estado.ACTIVO) {
-            nuevoAcceso.setMotivoRechazo("El socio está inactivo");
+            nuevoAcceso.setMotivoRechazo("INACTIVO");
             return accesoRepository.save(nuevoAcceso);
         }
 
         if (socioBuscado.getCuotas().equals(EstadoCuota.PENDIENTE)) {
-            nuevoAcceso.setMotivoRechazo("El socio tiene cuotas pendientes");
+            nuevoAcceso.setMotivoRechazo("CUOTA_PENDIENTE");
             return accesoRepository.save(nuevoAcceso);
         }
 
         long aforoActual = accesoRepository.countByResultadoTrueAndFechaHoraSalidaIsNull();
 
         if (aforoActual >= 150) {
-            nuevoAcceso.setMotivoRechazo("El aforo está completo");
+            nuevoAcceso.setMotivoRechazo("AFORO_COMPLETO");
             return accesoRepository.save(nuevoAcceso);
         }
 
         if (accesoRepository.existsBySocioAndResultadoTrueAndFechaHoraSalidaIsNull(socioBuscado)) {
-            nuevoAcceso.setMotivoRechazo("El socio ya se encuentra dentro del gimnasio");
+            nuevoAcceso.setMotivoRechazo("YA_DENTRO");
             return accesoRepository.save(nuevoAcceso);
         }
         nuevoAcceso.setResultado(true);
@@ -70,7 +72,8 @@ public class AccesoService {
                 .findFirstBySocioAndResultadoTrueAndFechaHoraSalidaIsNullOrderByFechaHoraEntradaDesc(
                         socioBuscado
                 )
-                .orElseThrow(() -> new EntityNotFoundException(
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNPROCESSABLE_CONTENT,
                         "El socio no se encuentra dentro del gimnasio"
                 ));
 
