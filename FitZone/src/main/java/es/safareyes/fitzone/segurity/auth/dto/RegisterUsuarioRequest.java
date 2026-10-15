@@ -1,8 +1,11 @@
 package es.safareyes.fitzone.segurity.auth.dto;
 
+import es.safareyes.fitzone.model.Rol;
 import es.safareyes.fitzone.validation.FieldsValueMatch;
-import jakarta.validation.constraints.Email;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @FieldsValueMatch(
@@ -10,7 +13,13 @@ import jakarta.validation.constraints.Size;
         fieldMatch = "verifyPassword",
         message = "Los valores de password y verifyPassword no coinciden"
 )
-public record RegisterRequest(
+public record RegisterUsuarioRequest(
+
+        @NotBlank(message = "El nombre es obligatorio")
+        String nombre,
+
+        @NotBlank(message = "Los apellidos son obligatorios")
+        String apellidos,
 
         @NotBlank(message = "El nombre de usuario es obligatorio")
         String username,
@@ -21,13 +30,8 @@ public record RegisterRequest(
                 message = "La contraseña debe tener al menos 8 caracteres"
         )
         String password,
+
         @NotBlank(message = "Debes confirmar la contraseña")
-        String verifyPassword,
-
-        @NotBlank(message = "El nombre es obligatorio")
-        String nombre,
-
-        @NotBlank(message = "Los apellidos son obligatorios")
-        String apellidos
+        String verifyPassword
 ) {
 }
