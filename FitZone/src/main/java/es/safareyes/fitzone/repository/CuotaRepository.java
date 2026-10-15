@@ -70,4 +70,9 @@ public interface CuotaRepository extends JpaRepository<Cuota, UUID> {
         """)
     List<Cuota> findAllWithSocioAndPlan();
 
+    boolean existsBySocioIdAndEstadoCuota(
+            UUID socioId,
+            EstadoCuota estadoCuota
+    );
+
 }

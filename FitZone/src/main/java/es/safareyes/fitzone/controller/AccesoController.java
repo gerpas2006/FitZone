@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/acceso")
 @RequiredArgsConstructor
@@ -30,5 +32,11 @@ public class AccesoController {
     @GetMapping("/contar/aforo")
     public ResponseEntity<Long> contarAforo(){
         return ResponseEntity.ok(accesoService.personaDentroGym());
+    }
+
+
+    @GetMapping("/lista")
+    public ResponseEntity<List<AccesoResponseDto>> listarAccesos(){
+        return ResponseEntity.ok(accesoService.listarAccesos().stream().map(AccesoResponseDto::of).toList());
     }
 }

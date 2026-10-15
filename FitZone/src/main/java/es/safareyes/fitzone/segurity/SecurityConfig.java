@@ -84,6 +84,12 @@ public class SecurityConfig {
                                 "/api/v1/acceso/salida/**"
                         ).permitAll()
 
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/acceso/lista",
+                                "/api/v1/acceso/contar/aforo"
+                                ).hasAnyRole("RECEPCION", "ADMIN")
+
                         // Recepción o administrador crean socios y su usuario
                         .requestMatchers(
                                 HttpMethod.POST,
@@ -95,6 +101,11 @@ public class SecurityConfig {
                                 HttpMethod.POST,
                                 "/api/v1/auth/register/usuario"
                         ).hasRole("ADMIN")
+
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/auth/reserva"
+                        ).hasRole("SOCIO")
 
                         .requestMatchers(
                                 HttpMethod.POST,

@@ -21,10 +21,16 @@ public interface SocioRepository extends JpaRepository<Socio, UUID>, JpaSpecific
 
     @EntityGraph(attributePaths = {"usuario", "plan"})
     Optional<Socio> findByDni(String dni);
+
+    @EntityGraph(attributePaths = {"usuario", "plan"})
+    Optional<Socio> findByUsuario_Id(UUID usuarioId);
+
     List<Socio> findByUsuario_NombreContainingIgnoreCase(String nombre);
+
     boolean existsByEmailIgnoreCase(String email);
 
-    @EntityGraph(attributePaths = {"cuotas", "plan", "usuario"})    @Query("""
+    @EntityGraph(attributePaths = {"cuotas", "plan", "usuario"})
+    @Query("""
         SELECT DISTINCT c.socio
         FROM Cuota c
         JOIN c.socio s

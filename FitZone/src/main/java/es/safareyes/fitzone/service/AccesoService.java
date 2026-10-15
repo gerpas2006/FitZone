@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -80,5 +81,13 @@ public class AccesoService {
 
     public long personaDentroGym(){
         return accesoRepository.countByResultadoTrueAndFechaHoraSalidaIsNull();
+    }
+
+    public List<Acceso> listarAccesos(){
+        List<Acceso> lista = accesoRepository.findAll();
+        if (lista.isEmpty()){
+            throw new EntityNotFoundException("No hay accesos registrados");
+        }
+        return lista;
     }
 }

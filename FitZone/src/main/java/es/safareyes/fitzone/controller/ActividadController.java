@@ -23,4 +23,6 @@ public class ActividadController {
     public ResponseEntity<List<ActividadResponseDto>> buscarActividadesDisponibles(@RequestParam LocalDateTime fechaHora){
         return  ResponseEntity.ok(actividadService.actividadesDelDia(fechaHora).stream().toList());
     }
+
+
 }
