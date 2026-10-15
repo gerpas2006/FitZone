@@ -52,7 +52,7 @@ public class SocioService {
 
 
     public List<Socio> buscarSocioPorNombre(String nombre){
-        List<Socio> listaSocios =  socioRepository.findByNombre(nombre);
+        List<Socio> listaSocios = socioRepository.findByUsuario_NombreContainingIgnoreCase(nombre);
         if (listaSocios.isEmpty()){
             throw new EntityNotFoundException("No se han encontrado socios con ese nombre");
         }
