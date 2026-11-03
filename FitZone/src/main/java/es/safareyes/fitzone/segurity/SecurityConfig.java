@@ -59,10 +59,10 @@ public class SecurityConfig {
                     CorsConfiguration configuration = new CorsConfiguration();
 
                     configuration.setAllowedOrigins(
-                            List.of("http://localhost:8080")
+                            List.of("http://localhost:4200")
                     );
                     configuration.setAllowedMethods(
-                            List.of("GET", "POST", "PUT", "DELETE", "PATCH")
+                            List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                     );
                     configuration.setAllowedHeaders(List.of("*"));
                     configuration.setAllowCredentials(true);
@@ -75,6 +75,7 @@ public class SecurityConfig {
                 })
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         // Login y control de acceso sin autenticación
                         .requestMatchers(
