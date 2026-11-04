@@ -16,7 +16,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Entity
 @AllArgsConstructor
-@Table(name = "cuota")
+@Table(
+        name = "cuota",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_cuota_socio_mes_anio",
+                columnNames = {"socio_id", "mes", "anio"}
+        )
+)
 public class Cuota {
 
     @Id

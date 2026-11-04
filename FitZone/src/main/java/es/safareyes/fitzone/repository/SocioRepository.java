@@ -37,6 +37,11 @@ public interface SocioRepository extends JpaRepository<Socio, UUID>, JpaSpecific
             @Param("anio") Integer anio
     );
 
+    @EntityGraph(attributePaths = {"plan"})
+    Optional<Socio> findWithPlanById(UUID id);
+
+    @EntityGraph(attributePaths = {"plan"})
+    Optional<Socio> findByUsuario_Id(UUID usuarioId);
 
 
 }
