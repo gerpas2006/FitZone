@@ -15,7 +15,6 @@ import java.util.UUID;
 @Repository
 public interface AccesoRepository extends JpaRepository<Acceso, UUID> {
 
-    long countByResultadoTrueAndFechaHoraSalidaIsNull();
 
     @Query("SELECT a FROM Acceso a WHERE a.socio = :socio AND a.fechaHoraSalida IS NULL")
     Optional<Acceso> findBySocioAndFechaHoraSalidaIsNull(@Param("socio") Socio socio);
@@ -23,6 +22,20 @@ public interface AccesoRepository extends JpaRepository<Acceso, UUID> {
     Optional<Acceso> findFirstBySocioAndResultadoTrueAndFechaHoraSalidaIsNullOrderByFechaHoraEntradaDesc(
             Socio socio
     );
+
+    @Query("""
+            SELECT COUNT(a)
+            FROM Acceso a
+            WHERE a.resultado = true
+              AND a.fechaHoraSalida IS NULL
+              AND a.fechaHoraEntrada >= :inicio
+              AND a.fechaHoraEntrada < :fin
+            """)
+    long countEntradasAbiertasDelDia(
+            @Param("inicio") LocalDateTime inicio,
+            @Param("fin") LocalDateTime fin
+    );
+
 
     boolean existsBySocioAndResultadoTrueAndFechaHoraSalidaIsNull(Socio socio);
 

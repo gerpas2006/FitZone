@@ -24,19 +24,18 @@ public class ActividadService {
     public List<ActividadResponseDto> actividadesDelDia(
             LocalDateTime fechaHora
     ) {
-        LocalDateTime inicio;
-        LocalDateTime fin;
-        List<ActividadResponseDto> actividadesDisponibles;
+        LocalDateTime inicio = fechaHora
+                .toLocalDate()
+                .atStartOfDay();
 
-        inicio = fechaHora.withMinute(0).withSecond(0).withNano(0);
-        fin = inicio.plusHours(1);
+        LocalDateTime fin = inicio.plusDays(1);
 
-        actividadesDisponibles =
+        List<ActividadResponseDto> actividadesDisponibles =
                 actividadRepository.findActividadesDelDia(inicio, fin);
 
         if (actividadesDisponibles.isEmpty()) {
             throw new EntityNotFoundException(
-                    "No hay actividades libres para esa hora"
+                    "No hay actividades libres para ese día"
             );
         }
 

@@ -52,13 +52,19 @@ public class SocioController {
             @RequestParam(required = false) Estado estado,
             @RequestParam(required = false) LocalDate fechaInicio,
             @RequestParam(required = false) LocalDate fechaFin,
-            @RequestParam(required = false) UUID planId
-    ) {
+            @RequestParam(required = false) UUID planId,
+            @RequestParam(required = false) String dni,
+            @RequestParam(required = false) String nombre
+
+
+            ) {
         SocioFIltradoDto filtro = new SocioFIltradoDto(
                 estado,
                 fechaInicio,
                 fechaFin,
-                planId
+                planId,
+                nombre,
+                dni
         );
 
         Page<SocioResponseDto> resultado = socioService

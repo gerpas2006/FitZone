@@ -1,6 +1,7 @@
 package es.safareyes.fitzone.controller;
 
 import es.safareyes.fitzone.dto.AccesoResponseDto;
+import es.safareyes.fitzone.dto.AforoResponseDto;
 import es.safareyes.fitzone.service.AccesoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,9 @@ public class AccesoController {
     }
 
     @GetMapping("/contar/aforo")
-    public ResponseEntity<Long> contarAforo(){
-        return ResponseEntity.ok(accesoService.personaDentroGym());
+    public ResponseEntity<AforoResponseDto> contarAforo() {
+        return ResponseEntity.ok(
+                accesoService.obtenerAforo()
+        );
     }
 }

@@ -36,7 +36,9 @@ public class SocioService {
         Page<Socio> sociosFiltrados = socioRepository.findBy(
                 PredicateSpecification.allOf(
                         SocioFilter.filtrarPorEstado(filtro.estado()),
+                        SocioFilter.filtrarPorDni(filtro.dni()),
                         SocioFilter.filtarPorPlan(filtro.planId()),
+                        SocioFilter.filtrarPorNombre(filtro.nombre()),
                         SocioFilter.filtrarPorFecha(filtro.fechaInicio(),filtro.fechaFin())
                 ), q -> q.page(pageable)
         );

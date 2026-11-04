@@ -1,5 +1,6 @@
 package es.safareyes.fitzone.service;
 
+import es.safareyes.fitzone.dto.AforoResponseDto;
 import es.safareyes.fitzone.model.Acceso;
 import es.safareyes.fitzone.model.Estado;
 import es.safareyes.fitzone.model.EstadoCuota;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -44,7 +46,12 @@ public class AccesoService {
             return accesoRepository.save(nuevoAcceso);
         }
 
-        long aforoActual = accesoRepository.countByResultadoTrueAndFechaHoraSalidaIsNull();
+        LocalDate hoy = LocalDate.now();
+
+        long aforoActual = accesoRepository.countEntradasAbiertasDelDia(
+                hoy.atStartOfDay(),
+                hoy.plusDays(1).atStartOfDay()
+        );
 
         if (aforoActual >= 150) {
             nuevoAcceso.setMotivoRechazo("El aforo está completo");
@@ -81,7 +88,17 @@ public class AccesoService {
         return accesoRepository.save(accesoExistente);
     }
 
-    public long personaDentroGym(){
-        return accesoRepository.countByResultadoTrueAndFechaHoraSalidaIsNull();
+    public AforoResponseDto obtenerAforo() {
+        LocalDate hoy = LocalDate.now();
+
+        long personasDentro = accesoRepository.countEntradasAbiertasDelDia(
+                hoy.atStartOfDay(),
+                hoy.plusDays(1).atStartOfDay()
+        );
+
+        return new AforoResponseDto(
+                personasDentro,
+                150
+        );
     }
 }
