@@ -28,7 +28,11 @@ public class SocioService {
     private final CuotaRepository cuotaRepository;
 
     public List<Socio> findAll(){
-        return socioRepository.findAll();
+        List<Socio> lista = socioRepository.findAll();
+        if (lista.isEmpty()){
+            throw new EntityNotFoundException("No hay socios registrados");
+        }
+        return lista;
     }
 
 

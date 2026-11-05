@@ -80,9 +80,7 @@ public class SecurityConfig {
                         // Login y control de acceso sin autenticación
                         .requestMatchers(
                                 HttpMethod.POST,
-                                "/api/v1/auth/login",
-                                "/api/v1/acceso/entrada/**",
-                                "/api/v1/acceso/salida/**"
+                                "/api/v1/auth/login"
                         ).permitAll()
 
                         // Recepción o administrador crean socios y su usuario
@@ -99,7 +97,9 @@ public class SecurityConfig {
 
                         .requestMatchers(
                                 HttpMethod.POST,
-                                "/api/v1/cuota/pagar/**"
+                                "/api/v1/cuota/pagar/**",
+                                "/api/v1/acceso/entrada/**",
+                                "/api/v1/acceso/salida/**"
                         ).hasAnyRole("ADMIN", "RECEPCION", "SOCIO")
 
                         .requestMatchers(
@@ -110,7 +110,9 @@ public class SecurityConfig {
 
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/api/v1/cuota/todas-las-cuotas"
+                                "/api/v1/cuota/todas-las-cuotas",
+                                "/api/v1/socio/listar",
+                                "/api/v1/acceso/dentro"
                         ).hasAnyRole("ADMIN", "RECEPCION")
 
                         .requestMatchers(

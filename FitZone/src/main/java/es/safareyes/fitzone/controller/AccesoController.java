@@ -2,10 +2,13 @@ package es.safareyes.fitzone.controller;
 
 import es.safareyes.fitzone.dto.AccesoResponseDto;
 import es.safareyes.fitzone.dto.AforoResponseDto;
+import es.safareyes.fitzone.dto.SocioDentroDto;
 import es.safareyes.fitzone.service.AccesoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/acceso")
@@ -32,6 +35,15 @@ public class AccesoController {
     public ResponseEntity<AforoResponseDto> contarAforo() {
         return ResponseEntity.ok(
                 accesoService.obtenerAforo()
+        );
+    }
+    @GetMapping("/dentro")
+    public ResponseEntity<List<SocioDentroDto>> genteDentroGym() {
+        return ResponseEntity.ok(
+                accesoService.obtenerSociosDentro()
+                        .stream()
+                        .map(acceso -> SocioDentroDto.of(acceso.getSocio()))
+                        .toList()
         );
     }
 }

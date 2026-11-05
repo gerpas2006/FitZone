@@ -2,6 +2,7 @@ package es.safareyes.fitzone.repository;
 
 import es.safareyes.fitzone.model.Acceso;
 import es.safareyes.fitzone.model.Socio;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -38,6 +39,22 @@ public interface AccesoRepository extends JpaRepository<Acceso, UUID> {
 
 
     boolean existsBySocioAndResultadoTrueAndFechaHoraSalidaIsNull(Socio socio);
+
+    @Query("""
+        SELECT a
+        FROM Acceso a
+        JOIN FETCH a.socio s
+        JOIN FETCH s.usuario
+        WHERE a.resultado = true
+          AND a.fechaHoraSalida IS NULL
+          AND a.fechaHoraEntrada >= :inicio
+          AND a.fechaHoraEntrada < :fin
+        ORDER BY a.fechaHoraEntrada ASC
+        """)
+    List<Acceso> findSociosDentro(
+            @Param("inicio") LocalDateTime inicio,
+            @Param("fin") LocalDateTime fin
+    );
 
 
 }

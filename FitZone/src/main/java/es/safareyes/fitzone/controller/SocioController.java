@@ -111,5 +111,11 @@ public class SocioController {
         );
     }
 
+    @GetMapping("/listar")
+    public ResponseEntity<List<SocioResponseDto>> listarSocios(){
+        return ResponseEntity.ok(socioService.findAll().stream()
+                .map(SocioResponseDto::of).toList());
+    }
+
 
 }

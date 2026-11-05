@@ -1,6 +1,7 @@
 package es.safareyes.fitzone.service;
 
 import es.safareyes.fitzone.dto.AforoResponseDto;
+import es.safareyes.fitzone.dto.SocioDentroDto;
 import es.safareyes.fitzone.model.Acceso;
 import es.safareyes.fitzone.model.Estado;
 import es.safareyes.fitzone.model.EstadoCuota;
@@ -15,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -99,6 +101,15 @@ public class AccesoService {
         return new AforoResponseDto(
                 personasDentro,
                 150
+        );
+    }
+
+    public List<Acceso> obtenerSociosDentro() {
+        LocalDate hoy = LocalDate.now();
+
+        return accesoRepository.findSociosDentro(
+                hoy.atStartOfDay(),
+                hoy.plusDays(1).atStartOfDay()
         );
     }
 }

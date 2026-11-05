@@ -21,6 +21,7 @@ public interface SocioRepository extends JpaRepository<Socio, UUID>, JpaSpecific
 
     @EntityGraph(attributePaths = {"usuario", "plan"})
     Optional<Socio> findByDni(String dni);
+    @EntityGraph(attributePaths = {"usuario", "plan"})
     List<Socio> findByUsuario_NombreContainingIgnoreCase(String nombre);
     boolean existsByEmailIgnoreCase(String email);
 
@@ -42,6 +43,10 @@ public interface SocioRepository extends JpaRepository<Socio, UUID>, JpaSpecific
 
     @EntityGraph(attributePaths = {"plan"})
     Optional<Socio> findByUsuario_Id(UUID usuarioId);
+
+    @EntityGraph(attributePaths = {"usuario", "plan"})
+    @Override
+    List<Socio> findAll();
 
 
 }

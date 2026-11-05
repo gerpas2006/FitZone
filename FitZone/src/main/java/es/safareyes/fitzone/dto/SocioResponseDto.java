@@ -15,7 +15,8 @@ public record SocioResponseDto(
         String telefono,
         LocalDate fechaAlta,
         Estado estado,
-        UUID planId
+        UUID planId,
+        String planNombre
 ) {
 
     public static SocioResponseDto of(Socio socio) {
@@ -28,7 +29,7 @@ public record SocioResponseDto(
                 socio.getTelefono(),
                 socio.getFechaAlta(),
                 socio.getEstado(),
-                socio.getPlan().getId()
-        );
+                socio.getPlan().getId(),
+                socio.getPlan().getNombre()        );
     }
 }
