@@ -5,6 +5,8 @@ import es.safareyes.fitzone.dto.AforoResponseDto;
 import es.safareyes.fitzone.dto.SocioDentroDto;
 import es.safareyes.fitzone.service.AccesoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +29,7 @@ public class AccesoController {
     @PostMapping("/salida/{dni}")
     public ResponseEntity<AccesoResponseDto> tornoSalida(@PathVariable String dni) {
         return ResponseEntity.ok(
-                AccesoResponseDto.of(accesoService.tornoSalida(dni))
+                accesoService.tornoSalida(dni)
         );
     }
 
@@ -45,5 +47,11 @@ public class AccesoController {
                         .map(acceso -> SocioDentroDto.of(acceso.getSocio()))
                         .toList()
         );
+    }
+
+    @GetMapping("/reciente")
+    public ResponseEntity<List<AccesoResponseDto>> accesosRecientes(@PageableDefault(size = 10) Pageable pageable){
+        return ResponseEntity.ok(accesoService.obtenerAccesosRecientes(pageable)
+                .stream().map(AccesoResponseDto::of).toList());
     }
 }

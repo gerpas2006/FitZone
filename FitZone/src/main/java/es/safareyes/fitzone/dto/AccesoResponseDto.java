@@ -13,7 +13,8 @@ public record AccesoResponseDto(
         boolean resultado,
         String motivoRechazo,
         boolean bonificacionParkingAplicada,
-        UUID socioId
+        UUID socioId,
+        String socioNombre
 ) {
     public static AccesoResponseDto of(Acceso acceso) {
         return new AccesoResponseDto(
@@ -23,7 +24,8 @@ public record AccesoResponseDto(
                 acceso.isResultado(),
                 acceso.getMotivoRechazo(),
                 acceso.isBonificacionParkingAplicada(),
-                acceso.getId()
+                acceso.getSocio().getId(),
+                acceso.getSocio().getUsuario().getNombre()
         );
     }
 }

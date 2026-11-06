@@ -1,5 +1,6 @@
 package es.safareyes.fitzone.service;
 
+import es.safareyes.fitzone.dto.AccesoResponseDto;
 import es.safareyes.fitzone.dto.AforoResponseDto;
 import es.safareyes.fitzone.dto.SocioDentroDto;
 import es.safareyes.fitzone.model.Acceso;
@@ -9,7 +10,9 @@ import es.safareyes.fitzone.model.Socio;
 import es.safareyes.fitzone.repository.AccesoRepository;
 import es.safareyes.fitzone.repository.SocioRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -70,16 +73,15 @@ public class AccesoService {
         return accesoRepository.save(nuevoAcceso);
     }
 
-    public Acceso tornoSalida(String dni) {
+    @Transactional
+    public AccesoResponseDto tornoSalida(String dni) {
         Socio socioBuscado = socioRepository.findByDni(dni)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "No se ha encontrado el socio con ese DNI"
                 ));
 
         Acceso accesoExistente = accesoRepository
-                .findFirstBySocioAndResultadoTrueAndFechaHoraSalidaIsNullOrderByFechaHoraEntradaDesc(
-                        socioBuscado
-                )
+                .findAccesoAbiertoBySocio(socioBuscado)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.UNPROCESSABLE_ENTITY,
                         "El socio no tiene una entrada abierta"
@@ -87,9 +89,10 @@ public class AccesoService {
 
         accesoExistente.setFechaHoraSalida(LocalDateTime.now());
 
-        return accesoRepository.save(accesoExistente);
-    }
+        Acceso accesoGuardado = accesoRepository.save(accesoExistente);
 
+        return AccesoResponseDto.of(accesoGuardado);
+    }
     public AforoResponseDto obtenerAforo() {
         LocalDate hoy = LocalDate.now();
 
@@ -111,5 +114,13 @@ public class AccesoService {
                 hoy.atStartOfDay(),
                 hoy.plusDays(1).atStartOfDay()
         );
+    }
+
+    public List<Acceso> obtenerAccesosRecientes(Pageable pageable) {
+        List<Acceso> lista =  accesoRepository.findByOrderByFechaHoraEntradaDesc(pageable);
+        if (lista.isEmpty()){
+            throw new EntityNotFoundException("No hay accesos recientes");
+        }
+        return lista;
     }
 }
