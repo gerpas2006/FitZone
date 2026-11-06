@@ -71,6 +71,12 @@ public class CuotaController {
         return ResponseEntity.ok(cuotas);
     }
 
+    @GetMapping("/buscar/{nombre}")
+    public ResponseEntity<List<CuotaResponseDto>> buscarCuotaSocio(@PathVariable String nombre){
+        return ResponseEntity.ok(cuotaService.buscarCuotaNombreSocio(nombre).stream().map(CuotaResponseDto::of)
+                .toList());
+    }
+
 
 
 }

@@ -142,4 +142,12 @@ public class CuotaService {
         );
 
     }
+
+    public List<Cuota> buscarCuotaNombreSocio(String nombre){
+        List<Cuota> listaFiltrada = cuotaRepository.findBySocio_Usuario_NombreIgnoreCase(nombre);
+        if (listaFiltrada.isEmpty()){
+            throw new EntityNotFoundException("No se ha encontrado ninguna cuota a ese nombre");
+        }
+        return listaFiltrada;
+    }
 }

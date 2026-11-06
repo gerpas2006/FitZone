@@ -118,7 +118,8 @@ public class SecurityConfig {
                                 "/api/v1/cuota/todas-las-cuotas",
                                 "/api/v1/acceso/dentro",
                                 "/api/v1/socio/listar",
-                                "/api/v1/acceso/reciente"
+                                "/api/v1/acceso/reciente",
+                                "/pi/v1/cuota/buscar/"
                                 ).hasAnyRole("ADMIN", "RECEPCION")
 
                         .requestMatchers(

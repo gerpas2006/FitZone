@@ -15,7 +15,10 @@ public record CuotaResponseDto(
         LocalDateTime fechaPago,
         UUID socioId,
         String dniSocio,
-        UUID planId
+        UUID planId,
+        String nombreSocio,
+        String apellidoSocio,
+        String nombrePlan
 ) {
     public static CuotaResponseDto of(Cuota cuota) {
         return new CuotaResponseDto(
@@ -27,7 +30,11 @@ public record CuotaResponseDto(
                 cuota.getFechaPago(),
                 cuota.getSocio().getId(),
                 cuota.getSocio().getDni(),
-                cuota.getPlan().getId()
+                cuota.getPlan().getId(),
+                cuota.getSocio().getUsuario().getNombre(),
+                cuota.getSocio().getUsuario().getApellidos(),
+                cuota.getPlan().getNombre()
+
         );
     }
 }

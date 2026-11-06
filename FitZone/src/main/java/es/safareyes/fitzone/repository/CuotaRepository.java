@@ -76,4 +76,8 @@ public interface CuotaRepository extends JpaRepository<Cuota, UUID> {
             Integer mes,
             Integer anio
     );
+
+    @EntityGraph(attributePaths = {"socio", "socio.usuario", "plan"})
+    List<Cuota> findBySocio_Usuario_NombreIgnoreCase(String nombre);
+
 }
