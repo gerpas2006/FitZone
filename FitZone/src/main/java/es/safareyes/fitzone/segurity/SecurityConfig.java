@@ -83,6 +83,12 @@ public class SecurityConfig {
                                 "/api/v1/auth/login"
                         ).permitAll()
 
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/actividad/disponibles",
+                                "/api/v1/plan/lista/planes"
+                        ).permitAll()
+
 
                         // Recepción o administrador crean socios y su usuario
                         .requestMatchers(
@@ -97,20 +103,28 @@ public class SecurityConfig {
                         ).hasRole("ADMIN")
 
                         .requestMatchers(
+                                HttpMethod.PATCH,
+                                "/api/v1/socio/estado/**"
+                        ).hasRole("ADMIN")
+
+                        .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/v1/acceso/entrada/**",
                                 "/api/v1/acceso/salida/**"
                         ).hasAnyRole("ADMIN", "RECEPCION")
 
                         .requestMatchers(
+                                HttpMethod.PUT,
+                                "/api/v1/socio/editar/**"
+                        ).hasAnyRole("ADMIN", "RECEPCION")
+                        .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/v1/cuota/pagar/**"
-                        ).hasAnyRole("ADMIN", "RECEPCION", "SOCIO")
+                        ).hasAnyRole("ADMIN", "RECEPCION")
 
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/api/v1/cuota/informes/**",
-                                "/api/v1/socio/cuotas/pendientes"
+                                "/api/v1/cuota/informes/**"
                         ).hasRole("ADMIN")
 
                         .requestMatchers(
@@ -119,18 +133,29 @@ public class SecurityConfig {
                                 "/api/v1/acceso/dentro",
                                 "/api/v1/socio/listar",
                                 "/api/v1/acceso/reciente",
-                                "/pi/v1/cuota/buscar/"
-                                ).hasAnyRole("ADMIN", "RECEPCION")
+                                "/api/v1/cuota/buscar/**",
+                                "/api/v1/socio/cuotas/pendientes"
+                        ).hasAnyRole("ADMIN", "RECEPCION")
 
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/api/v1/lista/planes"
+                                "/api/v1/socio/buscar/id/**"
                         ).hasAnyRole("ADMIN", "RECEPCION", "SOCIO")
 
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/v1/cuota/generar"
                         ).hasRole("ADMIN")
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/acceso/contar/aforo"
+                        ).hasAnyRole("ADMIN", "RECEPCION")
+
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/reserva/reservar"
+                        ).hasRole("SOCIO")
 
                         .requestMatchers("/api/v1/socio/**")
                         .hasAnyRole("ADMIN", "RECEPCION")
