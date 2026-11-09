@@ -9,10 +9,12 @@ import es.safareyes.fitzone.repository.CuotaRepository;
 import es.safareyes.fitzone.repository.PlanRepository;
 import es.safareyes.fitzone.repository.SocioRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.PredicateSpecification;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,7 +46,8 @@ public class SocioService {
                         SocioFilter.filtarPorPlan(filtro.planId()),
                         SocioFilter.filtrarPorNombre(filtro.nombre()),
                         SocioFilter.filtrarPorFecha(filtro.fechaInicio(),filtro.fechaFin())
-                ), q -> q.page(pageable)
+                ),q -> q.project("plan", "usuario").page(pageable)
+
         );
         return sociosFiltrados;
     }
@@ -66,7 +69,7 @@ public class SocioService {
     }
 
     public Socio buscarFichaSocio(UUID id){
-        return socioRepository.findById(id).orElseThrow(() ->
+        return socioRepository.findWithPlanAndUsuarioById(id).orElseThrow(() ->
                 new EntityNotFoundException("No se ha encontrado ninguna ficha del socio con ese id"));
     }
 

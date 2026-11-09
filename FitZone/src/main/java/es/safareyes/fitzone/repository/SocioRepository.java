@@ -4,6 +4,7 @@ import es.safareyes.fitzone.model.Estado;
 import es.safareyes.fitzone.model.Plan;
 import es.safareyes.fitzone.model.Socio;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -25,7 +26,8 @@ public interface SocioRepository extends JpaRepository<Socio, UUID>, JpaSpecific
     List<Socio> findByUsuario_NombreContainingIgnoreCase(String nombre);
     boolean existsByEmailIgnoreCase(String email);
 
-    @EntityGraph(attributePaths = {"cuotas", "plan", "usuario"})    @Query("""
+    @EntityGraph(attributePaths = {"cuotas", "plan", "usuario"})
+    @Query("""
         SELECT DISTINCT c.socio
         FROM Cuota c
         JOIN c.socio s
@@ -47,6 +49,15 @@ public interface SocioRepository extends JpaRepository<Socio, UUID>, JpaSpecific
     @EntityGraph(attributePaths = {"usuario", "plan"})
     @Override
     List<Socio> findAll();
+
+    @EntityGraph(attributePaths = {"plan", "usuario"})
+    Optional<Socio> findWithPlanAndUsuarioById(UUID id);
+
+
+
+
+
+
 
 
 }
