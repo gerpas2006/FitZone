@@ -31,7 +31,7 @@ public interface CuotaRepository extends JpaRepository<Cuota, UUID> {
             Integer anio
     );
 
-    @EntityGraph(attributePaths = {"socio", "plan"})
+    @EntityGraph(attributePaths = {"socio", "socio.usuario", "plan"})
     Page<Cuota> findBySocio_Id(UUID id, Pageable pageable);
 
 
@@ -59,16 +59,17 @@ public interface CuotaRepository extends JpaRepository<Cuota, UUID> {
 
 
 
-    @EntityGraph(attributePaths = {"socio", "plan"})
+    @EntityGraph(attributePaths = {"socio", "socio.usuario", "plan"})
     List<Cuota> findBySocio_Usuario_Id(UUID usuarioId);
 
     @Query("""
-        SELECT c
-        FROM Cuota c
-        JOIN FETCH c.socio
-        JOIN FETCH c.plan
-        ORDER BY c.anio DESC, c.mes DESC
-        """)
+    SELECT c
+    FROM Cuota c
+    JOIN FETCH c.socio s
+    JOIN FETCH s.usuario
+    JOIN FETCH c.plan
+    ORDER BY c.anio DESC, c.mes DESC
+    """)
     List<Cuota> findAllWithSocioAndPlan();
 
     Optional<Cuota> findBySocioIdAndMesAndAnio(
@@ -79,5 +80,15 @@ public interface CuotaRepository extends JpaRepository<Cuota, UUID> {
 
     @EntityGraph(attributePaths = {"socio", "socio.usuario", "plan"})
     List<Cuota> findBySocio_Usuario_NombreIgnoreCase(String nombre);
+
+    @Query("""
+    SELECT c
+    FROM Cuota c
+    JOIN FETCH c.socio s
+    JOIN FETCH s.usuario
+    JOIN FETCH c.plan
+    WHERE c.id = :id
+    """)
+    Optional<Cuota> findWithSocioAndPlanById(@Param("id") UUID id);
 
 }

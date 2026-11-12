@@ -50,8 +50,14 @@ public interface SocioRepository extends JpaRepository<Socio, UUID>, JpaSpecific
     @Override
     List<Socio> findAll();
 
-    @EntityGraph(attributePaths = {"plan", "usuario"})
-    Optional<Socio> findWithPlanAndUsuarioById(UUID id);
+    @Query("""
+    SELECT s
+    FROM Socio s
+    JOIN FETCH s.plan
+    LEFT JOIN FETCH s.usuario
+    WHERE s.id = :id
+    """)
+    Optional<Socio> findWithPlanAndUsuarioById(@Param("id") UUID id);
 
 
 

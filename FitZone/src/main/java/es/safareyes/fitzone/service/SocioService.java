@@ -73,8 +73,9 @@ public class SocioService {
                 new EntityNotFoundException("No se ha encontrado ninguna ficha del socio con ese id"));
     }
 
+    @Transactional
     public Socio editarSocio(UUID id, SocioEditarDto datosSocio) {
-        Socio socio = socioRepository.findById(id)
+        Socio socio = socioRepository.findWithPlanAndUsuarioById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "No se ha encontrado ningún socio con ese id"
                 ));
@@ -103,15 +104,21 @@ public class SocioService {
         return socioRepository.save(socio);
     }
 
-    public Socio activarDesactivarSocio(UUID id){
-        Socio socioBuscado = socioRepository.findById(id).orElseThrow(()->
-                new EntityNotFoundException("No se ha encontrado el socio con ese id"));
-        if (socioBuscado.getEstado().equals(Estado.ACTIVO)){
-            socioBuscado.setEstado(Estado.INACTIVO);
-        }else {
-            socioBuscado.setEstado(Estado.ACTIVO);
+    @Transactional
+    public Socio activarDesactivarSocio(UUID id) {
+        Socio socio = socioRepository.findWithPlanAndUsuarioById(id)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "No se ha encontrado el socio con ese id"
+                        ));
+
+        if (socio.getEstado().equals(Estado.ACTIVO)) {
+            socio.setEstado(Estado.INACTIVO);
+        } else {
+            socio.setEstado(Estado.ACTIVO);
         }
-        return socioRepository.save(socioBuscado);
+
+        return socioRepository.save(socio);
     }
 
     public Page<Cuota> obtenerHistorialPorSocio(

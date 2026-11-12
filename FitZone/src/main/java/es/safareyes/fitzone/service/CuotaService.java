@@ -43,21 +43,21 @@ public class CuotaService {
 
     @Transactional
     public Cuota registrarPago(UUID cuotaId) {
-        Cuota cuota = cuotaRepository.findById(cuotaId)
+        Cuota cuota = cuotaRepository.findWithSocioAndPlanById(cuotaId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "No se ha encontrado ninguna cuota con ese id"
                 ));
 
         if (cuota.getEstadoCuota() == EstadoCuota.PAGADA) {
-            throw new IllegalStateException(
-                    "La cuota ya está pagada"
-            );
+            throw new IllegalStateException("La cuota ya está pagada");
         }
 
         cuota.setEstadoCuota(EstadoCuota.PAGADA);
         cuota.setFechaPago(LocalDateTime.now());
 
-        return cuotaRepository.save(cuota);
+        cuotaRepository.save(cuota);
+
+        return cuota;
     }
 
 

@@ -12,6 +12,7 @@ public record SocioResponseDto(
         String nombre,
         String apellidos,
         String email,
+        String matricula,
         String telefono,
         LocalDate fechaAlta,
         Estado estado,
@@ -26,10 +27,12 @@ public record SocioResponseDto(
                 socio.getUsuario().getNombre(),
                 socio.getUsuario().getApellidos(),
                 socio.getEmail(),
+                socio.getMatricula(),
                 socio.getTelefono(),
                 socio.getFechaAlta(),
                 socio.getEstado(),
                 socio.getPlan().getId(),
-                socio.getPlan().getNombre()        );
+                socio.getPlan().getNombre()
+        );
     }
 }
