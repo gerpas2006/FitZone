@@ -42,12 +42,12 @@ public class AccesoService {
         nuevoAcceso.setResultado(false);
 
         if (socioBuscado.getEstado() != Estado.ACTIVO) {
-            nuevoAcceso.setMotivoRechazo("El socio está inactivo");
+            nuevoAcceso.setMotivoRechazo("INACTIVO");
             return accesoRepository.save(nuevoAcceso);
         }
 
         if (socioBuscado.getCuotas().equals(EstadoCuota.PENDIENTE)) {
-            nuevoAcceso.setMotivoRechazo("El socio tiene cuotas pendientes");
+            nuevoAcceso.setMotivoRechazo("CUOTA_PENDIENTE");
             return accesoRepository.save(nuevoAcceso);
         }
 
@@ -59,12 +59,12 @@ public class AccesoService {
         );
 
         if (aforoActual >= 150) {
-            nuevoAcceso.setMotivoRechazo("El aforo está completo");
+            nuevoAcceso.setMotivoRechazo("AFORO_COMPLETO");
             return accesoRepository.save(nuevoAcceso);
         }
 
         if (accesoRepository.existsBySocioAndResultadoTrueAndFechaHoraSalidaIsNull(socioBuscado)) {
-            nuevoAcceso.setMotivoRechazo("El socio ya se encuentra dentro del gimnasio");
+            nuevoAcceso.setMotivoRechazo("YA_DENTRO");
             return accesoRepository.save(nuevoAcceso);
         }
         nuevoAcceso.setResultado(true);

@@ -91,4 +91,5 @@ public interface CuotaRepository extends JpaRepository<Cuota, UUID> {
     """)
     Optional<Cuota> findWithSocioAndPlanById(@Param("id") UUID id);
 
+    boolean existsByMesAndAnio(Integer mes, Integer anio);
 }

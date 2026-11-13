@@ -92,6 +92,13 @@ public class CuotaService {
 
         List<Socio> socios = socioRepository.findAll();
 
+
+        if (cuotaRepository.existsByMesAndAnio(mes, anio)) {
+            throw new IllegalStateException(
+                    "Ya se han generado las cuotas del mes " + mes + " del año " + anio
+            );
+        }
+
         for (Socio socio : socios) {
             cuotasPendientes = cuotaRepository
                     .countBySocioIdAndEstadoCuota(
