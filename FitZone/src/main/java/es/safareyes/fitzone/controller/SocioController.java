@@ -3,6 +3,7 @@ package es.safareyes.fitzone.controller;
 import es.safareyes.fitzone.dto.*;
 import es.safareyes.fitzone.model.Estado;
 import es.safareyes.fitzone.service.SocioService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -80,7 +81,7 @@ public class SocioController {
     }
 
     @PutMapping("/editar/{id}")
-    public ResponseEntity<SocioResponseDto> editarSocio(@PathVariable UUID id, @RequestBody SocioEditarDto socioEditarDto){
+    public ResponseEntity<SocioResponseDto> editarSocio(@PathVariable UUID id, @Valid @RequestBody SocioEditarDto socioEditarDto){
         return ResponseEntity.ok(SocioResponseDto.of(socioService.editarSocio(id,socioEditarDto)));
     }
 

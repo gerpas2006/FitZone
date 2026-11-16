@@ -22,6 +22,7 @@ public record RegisterUsuarioRequest(
         String apellidos,
 
         @NotBlank(message = "El nombre de usuario es obligatorio")
+        @Size(min = 4, max = 30, message = "El usuario debe tener entre 4 y 30 caracteres")
         String username,
 
         @NotBlank(message = "La contraseña es obligatoria")
