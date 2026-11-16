@@ -38,9 +38,7 @@ public class AuthService {
     private final JwtAccessTokenService jwtService;
 
     @Transactional
-    public Usuario registerSocio(RegisterSocioRequest request) {
-        validarUsernameDisponible(request.username());
-
+    public Socio registerSocio(RegisterSocioRequest request) {
         Plan plan = planRepository.findById(request.planId())
                 .orElseThrow(() -> new ElementoNoEncontrado(
                         "No se ha encontrado ningún plan con ese id"
@@ -61,6 +59,8 @@ public class AuthService {
         }
 
         Socio socio = Socio.builder()
+                .nombre(request.nombre())
+                .apellidos(request.apellidos())
                 .dni(request.dni())
                 .email(request.email())
                 .telefono(request.telefono())
@@ -70,20 +70,7 @@ public class AuthService {
                 .plan(plan)
                 .build();
 
-        socioRepository.save(socio);
-
-        Usuario usuario = Usuario.builder()
-                .nombre(request.nombre())
-                .apellidos(request.apellidos())
-                .username(request.username())
-                .password(passwordEncoder.encode(request.password()))
-                .rol(Rol.SOCIO)
-                .socio(socio)
-                .build();
-
-        socio.setUsuario(usuario);
-
-        return usuarioRepository.save(usuario);
+        return socioRepository.save(socio);
     }
 
     @Transactional

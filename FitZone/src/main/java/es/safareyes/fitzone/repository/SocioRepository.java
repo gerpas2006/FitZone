@@ -23,7 +23,14 @@ public interface SocioRepository extends JpaRepository<Socio, UUID>, JpaSpecific
     @EntityGraph(attributePaths = {"usuario", "plan"})
     Optional<Socio> findByDni(String dni);
     @EntityGraph(attributePaths = {"usuario", "plan"})
-    List<Socio> findByUsuario_NombreContainingIgnoreCase(String nombre);
+    @Query("""
+        SELECT s
+        FROM Socio s
+        LEFT JOIN s.usuario u
+        WHERE LOWER(s.nombre) LIKE LOWER(CONCAT('%', :nombre, '%'))
+           OR LOWER(u.nombre) LIKE LOWER(CONCAT('%', :nombre, '%'))
+        """)
+    List<Socio> findByNombreContainingIgnoreCase(@Param("nombre") String nombre);
     boolean existsByEmailIgnoreCase(String email);
 
     @EntityGraph(attributePaths = {"cuotas", "plan", "usuario"})
@@ -67,5 +74,4 @@ public interface SocioRepository extends JpaRepository<Socio, UUID>, JpaSpecific
 
 
 }
-
 

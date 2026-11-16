@@ -1,17 +1,11 @@
 package es.safareyes.fitzone.segurity.auth.dto;
 
 import es.safareyes.fitzone.validation.DniValido;
-import es.safareyes.fitzone.validation.FieldsValueMatch;
 import es.safareyes.fitzone.validation.MatriculaValida;
 import jakarta.validation.constraints.*;
 
 import java.util.UUID;
 
-@FieldsValueMatch(
-        field = "password",
-        fieldMatch = "verifyPassword",
-        message = "Los valores de password y verifyPassword no coinciden"
-)
 public record RegisterSocioRequest(
 
         @NotBlank(message = "El nombre es obligatorio")
@@ -19,19 +13,6 @@ public record RegisterSocioRequest(
 
         @NotBlank(message = "Los apellidos son obligatorios")
         String apellidos,
-
-        @NotBlank(message = "El nombre de usuario es obligatorio")
-        String username,
-
-        @NotBlank(message = "La contraseña es obligatoria")
-        @Size(
-                min = 8,
-                message = "La contraseña debe tener al menos 8 caracteres"
-        )
-        String password,
-
-        @NotBlank(message = "Debes confirmar la contraseña")
-        String verifyPassword,
 
         @NotBlank(message = "El DNI es obligatorio")
         @DniValido

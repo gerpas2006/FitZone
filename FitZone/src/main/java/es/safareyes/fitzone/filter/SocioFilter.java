@@ -24,12 +24,16 @@ public interface SocioFilter {
                 return criteriaBuilder.conjunction();
             }
 
-            return criteriaBuilder.like(
-                    criteriaBuilder.lower(
-                            from.join("usuario").get("nombre")
-                    ),
+            var usuario = from.join("usuario", jakarta.persistence.criteria.JoinType.LEFT);
+            var nombreSocio = criteriaBuilder.like(
+                    criteriaBuilder.lower(from.get("nombre")),
                     "%" + nombre.trim().toLowerCase() + "%"
             );
+            var nombreUsuario = criteriaBuilder.like(
+                    criteriaBuilder.lower(usuario.get("nombre")),
+                    "%" + nombre.trim().toLowerCase() + "%"
+            );
+            return criteriaBuilder.or(nombreSocio, nombreUsuario);
         };
     }
 

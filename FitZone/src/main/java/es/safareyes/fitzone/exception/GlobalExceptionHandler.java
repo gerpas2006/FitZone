@@ -31,6 +31,16 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, Object>> manejarArgumentoIlegal(
+            IllegalArgumentException exception
+    ) {
+        return respuesta(
+                HttpStatus.BAD_REQUEST,
+                exception.getMessage()
+        );
+    }
+
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<Map<String, Object>> manejarEstadoIlegal(
             IllegalStateException exception

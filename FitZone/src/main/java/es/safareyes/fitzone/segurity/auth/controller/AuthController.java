@@ -1,6 +1,7 @@
 package es.safareyes.fitzone.segurity.auth.controller;
 
 import es.safareyes.fitzone.dto.UsuarioResponseDto;
+import es.safareyes.fitzone.dto.SocioResponseDto;
 import es.safareyes.fitzone.segurity.auth.dto.JwtUserResponse;
 import es.safareyes.fitzone.segurity.auth.dto.LoginRequest;
 import es.safareyes.fitzone.segurity.auth.dto.RegisterSocioRequest;
@@ -29,13 +30,13 @@ public class AuthController {
     }
 
     @PostMapping("/register/socio")
-    public ResponseEntity<UsuarioResponseDto> registerSocio(
+    public ResponseEntity<SocioResponseDto> registerSocio(
             @Valid @RequestBody RegisterSocioRequest request
     ) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(
-                        UsuarioResponseDto.of(
+                        SocioResponseDto.of(
                                 authService.registerSocio(request)
                         )
                 );

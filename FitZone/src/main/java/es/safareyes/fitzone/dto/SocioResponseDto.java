@@ -24,8 +24,8 @@ public record SocioResponseDto(
         return new SocioResponseDto(
                 socio.getId(),
                 socio.getDni(),
-                socio.getUsuario().getNombre(),
-                socio.getUsuario().getApellidos(),
+                socio.getNombre(),
+                socio.getApellidos(),
                 socio.getEmail(),
                 socio.getMatricula(),
                 socio.getTelefono(),

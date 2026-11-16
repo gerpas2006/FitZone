@@ -25,6 +25,12 @@ public class Socio {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
+    @Column(name = "nombre", nullable = false, length = 100)
+    private String nombre;
+
+    @Column(name = "apellidos", nullable = false, length = 100)
+    private String apellidos;
+
     @DniValido
     @Column(name = "dni", unique = true)
     private String dni;

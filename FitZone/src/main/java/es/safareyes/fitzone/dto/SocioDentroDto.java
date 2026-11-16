@@ -12,8 +12,8 @@ public record SocioDentroDto(
 ) {
     public static SocioDentroDto of(Socio socio) {
         return new SocioDentroDto(
-                socio.getUsuario().getNombre(),
-                socio.getUsuario().getApellidos(),
+                socio.getNombre(),
+                socio.getApellidos(),
                 socio.getDni()
         );
     }

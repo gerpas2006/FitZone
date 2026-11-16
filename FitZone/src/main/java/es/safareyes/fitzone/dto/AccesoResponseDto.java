@@ -25,7 +25,7 @@ public record AccesoResponseDto(
                 acceso.getMotivoRechazo(),
                 acceso.isBonificacionParkingAplicada(),
                 acceso.getSocio().getId(),
-                acceso.getSocio().getUsuario().getNombre()
+                acceso.getSocio().getNombre()
         );
     }
 }

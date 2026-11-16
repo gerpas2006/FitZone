@@ -34,8 +34,8 @@ public record SocioMorosoResponseDto(
         return new SocioMorosoResponseDto(
                 socio.getId(),
                 socio.getDni(),
-                socio.getUsuario().getNombre(),
-                socio.getUsuario().getApellidos(),
+                socio.getNombre(),
+                socio.getApellidos(),
                 socio.getEmail(),
                 socio.getTelefono(),
                 socio.getFechaAlta(),

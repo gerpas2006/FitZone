@@ -61,7 +61,7 @@ public class SocioService {
 
 
     public List<Socio> buscarSocioPorNombre(String nombre){
-        List<Socio> listaSocios = socioRepository.findByUsuario_NombreContainingIgnoreCase(nombre);
+        List<Socio> listaSocios = socioRepository.findByNombreContainingIgnoreCase(nombre);
         if (listaSocios.isEmpty()){
             throw new ElementoNoEncontrado("No se han encontrado socios con ese nombre");
         }

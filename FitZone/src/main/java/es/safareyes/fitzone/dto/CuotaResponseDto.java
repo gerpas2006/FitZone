@@ -31,8 +31,8 @@ public record CuotaResponseDto(
                 cuota.getSocio().getId(),
                 cuota.getSocio().getDni(),
                 cuota.getPlan().getId(),
-                cuota.getSocio().getUsuario().getNombre(),
-                cuota.getSocio().getUsuario().getApellidos(),
+                cuota.getSocio().getNombre(),
+                cuota.getSocio().getApellidos(),
                 cuota.getPlan().getNombre()
 
         );
