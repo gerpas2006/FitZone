@@ -5,7 +5,7 @@ import es.safareyes.fitzone.dto.IngresosPorMesPlan;
 import es.safareyes.fitzone.model.*;
 import es.safareyes.fitzone.repository.CuotaRepository;
 import es.safareyes.fitzone.repository.SocioRepository;
-import jakarta.persistence.EntityNotFoundException;
+import es.safareyes.fitzone.exception.ElementoNoEncontrado;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,7 +27,7 @@ public class CuotaService {
     public List<Cuota> listarMisCuotas(Usuario usuario) {
         List<Cuota> lista = cuotaRepository.findBySocio_Usuario_Id(usuario.getId());
         if (lista.isEmpty()){
-            throw new EntityNotFoundException("No tienes cuotas disponibles");
+            throw new ElementoNoEncontrado("No tienes cuotas disponibles");
         }
         return lista;
     }
@@ -36,7 +36,7 @@ public class CuotaService {
     public List<Cuota> listarTodasLasCuotas(){
         List<Cuota> lista = cuotaRepository.findAllWithSocioAndPlan();
         if (lista.isEmpty()){
-            throw new EntityNotFoundException("No hay ninguna cuota registrada");
+            throw new ElementoNoEncontrado("No hay ninguna cuota registrada");
         }
         return lista;
     }
@@ -44,7 +44,7 @@ public class CuotaService {
     @Transactional
     public Cuota registrarPago(UUID cuotaId) {
         Cuota cuota = cuotaRepository.findWithSocioAndPlanById(cuotaId)
-                .orElseThrow(() -> new EntityNotFoundException(
+                .orElseThrow(() -> new ElementoNoEncontrado(
                         "No se ha encontrado ninguna cuota con ese id"
                 ));
 
@@ -153,7 +153,7 @@ public class CuotaService {
     public List<Cuota> buscarCuotaNombreSocio(String nombre){
         List<Cuota> listaFiltrada = cuotaRepository.findBySocio_Usuario_NombreIgnoreCase(nombre);
         if (listaFiltrada.isEmpty()){
-            throw new EntityNotFoundException("No se ha encontrado ninguna cuota a ese nombre");
+            throw new ElementoNoEncontrado("No se ha encontrado ninguna cuota a ese nombre");
         }
         return listaFiltrada;
     }

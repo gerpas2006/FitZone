@@ -2,14 +2,13 @@ package es.safareyes.fitzone.service;
 
 import es.safareyes.fitzone.dto.AccesoResponseDto;
 import es.safareyes.fitzone.dto.AforoResponseDto;
-import es.safareyes.fitzone.dto.SocioDentroDto;
+import es.safareyes.fitzone.exception.ElementoNoEncontrado;
 import es.safareyes.fitzone.model.Acceso;
 import es.safareyes.fitzone.model.Estado;
 import es.safareyes.fitzone.model.EstadoCuota;
 import es.safareyes.fitzone.model.Socio;
 import es.safareyes.fitzone.repository.AccesoRepository;
 import es.safareyes.fitzone.repository.SocioRepository;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +30,7 @@ public class AccesoService {
 
     public Acceso tornoEntrada(String dni) {
         Socio socioBuscado = socioRepository.findByDni(dni)
-                .orElseThrow(() -> new EntityNotFoundException(
+                .orElseThrow(() -> new ElementoNoEncontrado(
                         "No se ha encontrado el socio con ese DNI"
                 ));
 
@@ -76,7 +75,7 @@ public class AccesoService {
     @Transactional
     public AccesoResponseDto tornoSalida(String dni) {
         Socio socioBuscado = socioRepository.findByDni(dni)
-                .orElseThrow(() -> new EntityNotFoundException(
+                .orElseThrow(() -> new ElementoNoEncontrado(
                         "No se ha encontrado el socio con ese DNI"
                 ));
 
@@ -119,7 +118,7 @@ public class AccesoService {
     public List<Acceso> obtenerAccesosRecientes(Pageable pageable) {
         List<Acceso> lista =  accesoRepository.findByOrderByFechaHoraEntradaDesc(pageable);
         if (lista.isEmpty()){
-            throw new EntityNotFoundException("No hay accesos recientes");
+            throw new ElementoNoEncontrado("No hay accesos recientes");
         }
         return lista;
     }

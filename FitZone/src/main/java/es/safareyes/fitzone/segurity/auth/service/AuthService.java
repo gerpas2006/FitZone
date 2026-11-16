@@ -1,5 +1,6 @@
 package es.safareyes.fitzone.segurity.auth.service;
 
+import es.safareyes.fitzone.exception.ElementoNoEncontrado;
 import es.safareyes.fitzone.model.Estado;
 import es.safareyes.fitzone.model.Plan;
 import es.safareyes.fitzone.model.Rol;
@@ -13,7 +14,6 @@ import es.safareyes.fitzone.segurity.auth.dto.LoginRequest;
 import es.safareyes.fitzone.segurity.auth.dto.RegisterSocioRequest;
 import es.safareyes.fitzone.segurity.auth.dto.RegisterUsuarioRequest;
 import es.safareyes.fitzone.segurity.jwt.JwtAccessTokenService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -42,7 +42,7 @@ public class AuthService {
         validarUsernameDisponible(request.username());
 
         Plan plan = planRepository.findById(request.planId())
-                .orElseThrow(() -> new EntityNotFoundException(
+                .orElseThrow(() -> new ElementoNoEncontrado(
                         "No se ha encontrado ningún plan con ese id"
                 ));
 
@@ -111,7 +111,7 @@ public class AuthService {
         );
 
         Usuario user = usuarioRepository.findByUsername(auth.getName())
-                .orElseThrow(() -> new EntityNotFoundException(
+                .orElseThrow(() -> new ElementoNoEncontrado(
                         "No se ha encontrado el usuario"
                 ));
 

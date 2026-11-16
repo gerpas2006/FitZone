@@ -1,5 +1,6 @@
 package es.safareyes.fitzone.service;
 
+import es.safareyes.fitzone.exception.ElementoNoEncontrado;
 import es.safareyes.fitzone.model.Plan;
 import es.safareyes.fitzone.repository.PlanRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ public class PlanService {
     public List<Plan> listarPlanes(){
         List<Plan> listaPlanes = planRepository.findAll();
         if (listaPlanes.isEmpty()){
-            new Exception("No hay ningun plan registrado en este momento");
+            throw new ElementoNoEncontrado("No hay ningun plan registrado en este momento");
         }
         return  listaPlanes;
     }

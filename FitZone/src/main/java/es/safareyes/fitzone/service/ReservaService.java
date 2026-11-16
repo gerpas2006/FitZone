@@ -13,7 +13,7 @@ import es.safareyes.fitzone.repository.ActividadRepository;
 import es.safareyes.fitzone.repository.CuotaRepository;
 import es.safareyes.fitzone.repository.ReservaRepository;
 import es.safareyes.fitzone.repository.SocioRepository;
-import jakarta.persistence.EntityNotFoundException;
+import es.safareyes.fitzone.exception.ElementoNoEncontrado;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -39,13 +39,13 @@ public class ReservaService {
     ) {
         Socio socio = socioRepository
                 .findByUsuario_Id(usuario.getId())
-                .orElseThrow(() -> new EntityNotFoundException(
+                .orElseThrow(() -> new ElementoNoEncontrado(
                         "El usuario autenticado no tiene un socio asociado"
                 ));
 
         Actividad actividad = actividadRepository
                 .findById(request.actividadId())
-                .orElseThrow(() -> new EntityNotFoundException(
+                .orElseThrow(() -> new ElementoNoEncontrado(
                         "No se ha encontrado la actividad"
                 ));
 

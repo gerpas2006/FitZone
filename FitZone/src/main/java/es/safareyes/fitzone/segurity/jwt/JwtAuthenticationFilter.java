@@ -1,8 +1,8 @@
 package es.safareyes.fitzone.segurity.jwt;
 
+import es.safareyes.fitzone.exception.ElementoNoEncontrado;
 import es.safareyes.fitzone.repository.UsuarioRepository;
 import io.jsonwebtoken.JwtException;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,7 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
                 }, () -> {;
-                    throw new EntityNotFoundException("User not found with userId: " + userId);
+                    throw new ElementoNoEncontrado("User not found with userId: " + userId);
                 });
 
             }

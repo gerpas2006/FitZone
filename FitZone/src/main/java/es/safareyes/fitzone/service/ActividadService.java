@@ -4,8 +4,8 @@ import es.safareyes.fitzone.dto.ActividadResponseDto;
 import es.safareyes.fitzone.model.Actividad;
 import es.safareyes.fitzone.repository.ActividadRepository;
 import es.safareyes.fitzone.repository.ReservaRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import es.safareyes.fitzone.exception.ElementoNoEncontrado;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -34,7 +34,7 @@ public class ActividadService {
                 actividadRepository.findActividadesDelDia(inicio, fin);
 
         if (actividadesDisponibles.isEmpty()) {
-            throw new EntityNotFoundException(
+            throw new ElementoNoEncontrado(
                     "No hay actividades libres para ese día"
             );
         }

@@ -8,7 +8,7 @@ import es.safareyes.fitzone.model.*;
 import es.safareyes.fitzone.repository.CuotaRepository;
 import es.safareyes.fitzone.repository.PlanRepository;
 import es.safareyes.fitzone.repository.SocioRepository;
-import jakarta.persistence.EntityNotFoundException;
+import es.safareyes.fitzone.exception.ElementoNoEncontrado;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,7 +32,7 @@ public class SocioService {
     public List<Socio> findAll(){
         List<Socio> lista = socioRepository.findAll();
         if (lista.isEmpty()){
-            throw new EntityNotFoundException("No hay socios registrados");
+            throw new ElementoNoEncontrado("No hay socios registrados");
         }
         return lista;
     }
@@ -54,7 +54,7 @@ public class SocioService {
 
     public Socio findByDni(String dni) {
         return socioRepository.findByDni(dni)
-                .orElseThrow(() -> new EntityNotFoundException(
+                .orElseThrow(() -> new ElementoNoEncontrado(
                         "No se ha encontrado el socio con el DNI: " + dni
                 ));
     }
@@ -63,20 +63,20 @@ public class SocioService {
     public List<Socio> buscarSocioPorNombre(String nombre){
         List<Socio> listaSocios = socioRepository.findByUsuario_NombreContainingIgnoreCase(nombre);
         if (listaSocios.isEmpty()){
-            throw new EntityNotFoundException("No se han encontrado socios con ese nombre");
+            throw new ElementoNoEncontrado("No se han encontrado socios con ese nombre");
         }
         return listaSocios;
     }
 
     public Socio buscarFichaSocio(UUID id){
         return socioRepository.findWithPlanAndUsuarioById(id).orElseThrow(() ->
-                new EntityNotFoundException("No se ha encontrado ninguna ficha del socio con ese id"));
+                new ElementoNoEncontrado("No se ha encontrado ninguna ficha del socio con ese id"));
     }
 
     @Transactional
     public Socio editarSocio(UUID id, SocioEditarDto datosSocio) {
         Socio socio = socioRepository.findWithPlanAndUsuarioById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
+                .orElseThrow(() -> new ElementoNoEncontrado(
                         "No se ha encontrado ningún socio con ese id"
                 ));
 
@@ -94,7 +94,7 @@ public class SocioService {
 
         if (datosSocio.planId() != null) {
             Plan plan = planRepository.findById(datosSocio.planId())
-                    .orElseThrow(() -> new EntityNotFoundException(
+                    .orElseThrow(() -> new ElementoNoEncontrado(
                             "No se ha encontrado ningún plan con ese id"
                     ));
 
@@ -108,7 +108,7 @@ public class SocioService {
     public Socio activarDesactivarSocio(UUID id) {
         Socio socio = socioRepository.findWithPlanAndUsuarioById(id)
                 .orElseThrow(() ->
-                        new EntityNotFoundException(
+                        new ElementoNoEncontrado(
                                 "No se ha encontrado el socio con ese id"
                         ));
 
@@ -139,7 +139,7 @@ public class SocioService {
                 .toList();
 
         if (listaMorosos.isEmpty()) {
-            throw new EntityNotFoundException(
+            throw new ElementoNoEncontrado(
                     "Muy bien, no hay morosos a la vista"
             );
         }

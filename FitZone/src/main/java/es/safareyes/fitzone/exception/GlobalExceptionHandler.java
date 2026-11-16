@@ -1,6 +1,6 @@
 package es.safareyes.fitzone.exception;
 
-import jakarta.persistence.EntityNotFoundException;
+import es.safareyes.fitzone.exception.ElementoNoEncontrado;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> manejarEntidadNoEncontrada(
-            EntityNotFoundException exception
+    @ExceptionHandler(ElementoNoEncontrado.class)
+    public ResponseEntity<Map<String, Object>> manejarElementoNoEncontrado(
+            ElementoNoEncontrado exception
     ) {
         return respuesta(
                 HttpStatus.NOT_FOUND,
