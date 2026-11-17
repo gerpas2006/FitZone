@@ -38,7 +38,7 @@ public class CuotaService {
         if (lista.isEmpty()){
             throw new ElementoNoEncontrado("No hay ninguna cuota registrada");
         }
-        return lista;
+        return lista.stream().limit(15).toList();
     }
 
     @Transactional
