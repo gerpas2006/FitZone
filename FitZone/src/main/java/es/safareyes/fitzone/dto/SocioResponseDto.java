@@ -2,6 +2,7 @@ package es.safareyes.fitzone.dto;
 
 import es.safareyes.fitzone.model.Estado;
 import es.safareyes.fitzone.model.Socio;
+import es.safareyes.fitzone.model.Usuario;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -21,11 +22,16 @@ public record SocioResponseDto(
 ) {
 
     public static SocioResponseDto of(Socio socio) {
+        Usuario usuario = socio.getUsuario();
+
+        String nombre = usuario != null ? usuario.getNombre() : null;
+        String apellidos = usuario != null ? usuario.getApellidos() : null;
+
         return new SocioResponseDto(
                 socio.getId(),
                 socio.getDni(),
-                socio.getUsuario().getNombre(),
-                socio.getUsuario().getApellidos(),
+                nombre,
+                apellidos,
                 socio.getEmail(),
                 socio.getMatricula(),
                 socio.getTelefono(),
