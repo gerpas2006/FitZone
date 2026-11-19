@@ -15,6 +15,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -81,15 +84,28 @@ public class SocioService {
                 ));
 
         if (datosSocio.email() != null) {
+            if (socioRepository.existsByEmailIgnoreCaseAndIdNot(datosSocio.email(), id)) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "El email ya está registrado");
+            }
             socio.setEmail(datosSocio.email());
         }
 
         if (datosSocio.telefono() != null) {
+            if (socioRepository.existsByTelefonoAndIdNot(datosSocio.telefono(), id)) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "El teléfono ya está registrado");
+            }
             socio.setTelefono(datosSocio.telefono());
         }
 
         if (datosSocio.matricula() != null) {
-            socio.setMatricula(datosSocio.matricula());
+            // Una matrícula vacía ("") elimina la matrícula del socio
+            String matricula = datosSocio.matricula().isBlank()
+                    ? null
+                    : datosSocio.matricula().trim().toUpperCase();
+            if (matricula != null && socioRepository.existsByMatriculaAndIdNot(matricula, id)) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "La matrícula ya está registrada");
+            }
+            socio.setMatricula(matricula);
         }
 
         if (datosSocio.planId() != null) {
@@ -121,10 +137,31 @@ public class SocioService {
         return socioRepository.save(socio);
     }
 
+    /**
+     * Un usuario con rol SOCIO solo puede consultar sus propios datos.
+     */
+    public void comprobarAccesoPropio(Usuario usuario, UUID socioId) {
+        if (usuario == null || usuario.getRol() != Rol.SOCIO) {
+            return;
+        }
+
+        boolean esPropio = socioRepository.findByUsuario_Id(usuario.getId())
+                .map(socio -> socio.getId().equals(socioId))
+                .orElse(false);
+
+        if (!esPropio) {
+            throw new AccessDeniedException("Solo puedes consultar tus propios datos");
+        }
+    }
+
     public Page<Cuota> obtenerHistorialPorSocio(
             UUID socioId,
             Pageable pageable
     ) {
+        if (!socioRepository.existsById(socioId)) {
+            throw new ElementoNoEncontrado("No se ha encontrado el socio con ese id");
+        }
+
         return cuotaRepository.findBySocio_Id(socioId, pageable);
     }
 

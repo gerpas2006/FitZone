@@ -46,7 +46,12 @@ public class AuthService {
                         "No se ha encontrado ningún plan con ese id"
                 ));
 
-        if (socioRepository.findByDni(request.dni()).isPresent()) {
+        String dni = request.dni().trim().toUpperCase();
+        String matricula = request.matricula() == null || request.matricula().isBlank()
+                ? null
+                : request.matricula().trim().toUpperCase();
+
+        if (socioRepository.existsByDni(dni)) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "El DNI ya está registrado"
@@ -60,12 +65,26 @@ public class AuthService {
             );
         }
 
+        if (matricula != null && socioRepository.existsByMatricula(matricula)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "La matrícula ya está registrada"
+            );
+        }
+
+        if (socioRepository.existsByTelefono(request.telefono())) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "El teléfono ya está registrado"
+            );
+        }
+
         Socio socio = Socio.builder()
-                .dni(request.dni())
+                .dni(dni)
                 .email(request.email())
                 .telefono(request.telefono())
                 .fechaAlta(LocalDate.now())
-                .matricula(request.matricula())
+                .matricula(matricula)
                 .estado(Estado.ACTIVO)
                 .plan(plan)
                 .build();
