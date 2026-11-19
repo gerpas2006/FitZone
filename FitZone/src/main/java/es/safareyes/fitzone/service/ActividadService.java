@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import es.safareyes.fitzone.exception.ElementoNoEncontrado;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +23,9 @@ public class ActividadService {
 
 
     public List<ActividadResponseDto> actividadesDelDia(
-            LocalDateTime fechaHora
+            LocalDate fecha
     ) {
-        LocalDateTime inicio = fechaHora
-                .toLocalDate()
-                .atStartOfDay();
+        LocalDateTime inicio = fecha.atStartOfDay();
 
         LocalDateTime fin = inicio.plusDays(1);
 
