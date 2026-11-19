@@ -31,7 +31,7 @@ public interface AccesoRepository extends JpaRepository<Acceso, UUID> {
           AND a.fechaHoraSalida IS NULL
         ORDER BY a.fechaHoraEntrada DESC
         """)
-    Optional<Acceso> findAccesoAbiertoBySocio(
+    List<Acceso> findAccesosAbiertosBySocio(
             @Param("socio") Socio socio
     );
 

@@ -26,6 +26,18 @@ public interface SocioRepository extends JpaRepository<Socio, UUID>, JpaSpecific
     List<Socio> findByUsuario_NombreContainingIgnoreCase(String nombre);
     boolean existsByEmailIgnoreCase(String email);
 
+    boolean existsByDni(String dni);
+
+    boolean existsByMatricula(String matricula);
+
+    boolean existsByTelefono(String telefono);
+
+    boolean existsByEmailIgnoreCaseAndIdNot(String email, UUID id);
+
+    boolean existsByMatriculaAndIdNot(String matricula, UUID id);
+
+    boolean existsByTelefonoAndIdNot(String telefono, UUID id);
+
     @EntityGraph(attributePaths = {"cuotas", "plan", "usuario"})
     @Query("""
         SELECT DISTINCT c.socio

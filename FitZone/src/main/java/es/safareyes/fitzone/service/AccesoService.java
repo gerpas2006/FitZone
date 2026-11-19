@@ -8,6 +8,7 @@ import es.safareyes.fitzone.model.Estado;
 import es.safareyes.fitzone.model.EstadoCuota;
 import es.safareyes.fitzone.model.Socio;
 import es.safareyes.fitzone.repository.AccesoRepository;
+import es.safareyes.fitzone.repository.CuotaRepository;
 import es.safareyes.fitzone.repository.SocioRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -19,91 +20,116 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class AccesoService {
 
+    public static final long AFORO_MAXIMO = 150;
+
+    public static final String INACTIVO = "INACTIVO";
+    public static final String CUOTA_PENDIENTE = "CUOTA_PENDIENTE";
+    public static final String YA_DENTRO = "YA_DENTRO";
+    public static final String AFORO_COMPLETO = "AFORO_COMPLETO";
+
     private final AccesoRepository accesoRepository;
     private final SocioRepository socioRepository;
+    private final CuotaRepository cuotaRepository;
 
+    /**
+     * RN-05 / RN-06: valida la entrada y registra SIEMPRE el intento
+     * (si el DNI existe). Un DNI inexistente devuelve 404 y no se registra.
+     */
+    @Transactional
     public Acceso tornoEntrada(String dni) {
-        Socio socioBuscado = socioRepository.findByDni(dni)
+        Socio socio = socioRepository.findByDni(normalizarDni(dni))
                 .orElseThrow(() -> new ElementoNoEncontrado(
                         "No se ha encontrado el socio con ese DNI"
                 ));
 
-        Acceso nuevoAcceso = new Acceso();
-        nuevoAcceso.setSocio(socioBuscado);
-        nuevoAcceso.setFechaHoraEntrada(LocalDateTime.now());
-        nuevoAcceso.setFechaHoraSalida(null);
-        nuevoAcceso.setResultado(false);
+        Acceso acceso = new Acceso();
+        acceso.setSocio(socio);
+        acceso.setFechaHoraEntrada(LocalDateTime.now());
+        acceso.setFechaHoraSalida(null);
+        acceso.setResultado(false);
 
-        if (socioBuscado.getEstado() != Estado.ACTIVO) {
-            nuevoAcceso.setMotivoRechazo("INACTIVO");
-            return accesoRepository.save(nuevoAcceso);
+        String motivo = motivoRechazo(socio);
+
+        if (motivo != null) {
+            acceso.setMotivoRechazo(motivo);
+            return accesoRepository.save(acceso);
         }
 
-        if (socioBuscado.getCuotas().equals(EstadoCuota.PENDIENTE)) {
-            nuevoAcceso.setMotivoRechazo("CUOTA_PENDIENTE");
-            return accesoRepository.save(nuevoAcceso);
+        acceso.setResultado(true);
+        acceso.setMotivoRechazo(null);
+
+        return accesoRepository.save(acceso);
+    }
+
+    private String motivoRechazo(Socio socio) {
+        if (socio.getEstado() != Estado.ACTIVO) {
+            return INACTIVO;
         }
 
         LocalDate hoy = LocalDate.now();
-
-        long aforoActual = accesoRepository.countEntradasAbiertasDelDia(
-                hoy.atStartOfDay(),
-                hoy.plusDays(1).atStartOfDay()
+        boolean cuotaPagada = cuotaRepository.existsBySocioIdAndMesAndAnioAndEstadoCuota(
+                socio.getId(),
+                hoy.getMonthValue(),
+                hoy.getYear(),
+                EstadoCuota.PAGADA
         );
-
-        if (aforoActual >= 150) {
-            nuevoAcceso.setMotivoRechazo("AFORO_COMPLETO");
-            return accesoRepository.save(nuevoAcceso);
+        if (!cuotaPagada) {
+            return CUOTA_PENDIENTE;
         }
 
-        if (accesoRepository.existsBySocioAndResultadoTrueAndFechaHoraSalidaIsNull(socioBuscado)) {
-            nuevoAcceso.setMotivoRechazo("YA_DENTRO");
-            return accesoRepository.save(nuevoAcceso);
+        if (accesoRepository.existsBySocioAndResultadoTrueAndFechaHoraSalidaIsNull(socio)) {
+            return YA_DENTRO;
         }
-        nuevoAcceso.setResultado(true);
-        nuevoAcceso.setMotivoRechazo(null);
 
-        return accesoRepository.save(nuevoAcceso);
+        if (aforoActual() >= AFORO_MAXIMO) {
+            return AFORO_COMPLETO;
+        }
+
+        return null;
     }
 
+    /**
+     * RN-07: una salida sin entrada abierta devuelve 422.
+     */
     @Transactional
     public AccesoResponseDto tornoSalida(String dni) {
-        Socio socioBuscado = socioRepository.findByDni(dni)
+        Socio socio = socioRepository.findByDni(normalizarDni(dni))
                 .orElseThrow(() -> new ElementoNoEncontrado(
                         "No se ha encontrado el socio con ese DNI"
                 ));
 
-        Acceso accesoExistente = accesoRepository
-                .findAccesoAbiertoBySocio(socioBuscado)
+        Acceso accesoAbierto = accesoRepository
+                .findAccesosAbiertosBySocio(socio)
+                .stream()
+                .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.UNPROCESSABLE_ENTITY,
                         "El socio no tiene una entrada abierta"
                 ));
 
-        accesoExistente.setFechaHoraSalida(LocalDateTime.now());
+        accesoAbierto.setFechaHoraSalida(LocalDateTime.now());
 
-        Acceso accesoGuardado = accesoRepository.save(accesoExistente);
-
-        return AccesoResponseDto.of(accesoGuardado);
+        return AccesoResponseDto.of(accesoRepository.save(accesoAbierto));
     }
-    public AforoResponseDto obtenerAforo() {
-        LocalDate hoy = LocalDate.now();
 
-        long personasDentro = accesoRepository.countEntradasAbiertasDelDia(
+    /**
+     * RN-07: aforo = entradas permitidas del día sin salida registrada.
+     */
+    public long aforoActual() {
+        LocalDate hoy = LocalDate.now();
+        return accesoRepository.countEntradasAbiertasDelDia(
                 hoy.atStartOfDay(),
                 hoy.plusDays(1).atStartOfDay()
         );
+    }
 
-        return new AforoResponseDto(
-                personasDentro,
-                150
-        );
+    public AforoResponseDto obtenerAforo() {
+        return new AforoResponseDto(aforoActual(), AFORO_MAXIMO);
     }
 
     public List<Acceso> obtenerSociosDentro() {
@@ -116,10 +142,14 @@ public class AccesoService {
     }
 
     public List<Acceso> obtenerAccesosRecientes(Pageable pageable) {
-        List<Acceso> lista =  accesoRepository.findByOrderByFechaHoraEntradaDesc(pageable);
-        if (lista.isEmpty()){
+        List<Acceso> lista = accesoRepository.findByOrderByFechaHoraEntradaDesc(pageable);
+        if (lista.isEmpty()) {
             throw new ElementoNoEncontrado("No hay accesos recientes");
         }
         return lista;
+    }
+
+    private String normalizarDni(String dni) {
+        return dni == null ? null : dni.trim().toUpperCase();
     }
 }
