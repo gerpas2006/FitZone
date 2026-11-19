@@ -137,9 +137,11 @@ public class SecurityConfig {
                                 "/api/v1/socio/cuotas/pendientes"
                         ).hasAnyRole("ADMIN", "RECEPCION")
 
+                        // SOCIO solo puede ver lo suyo (se comprueba en SocioService)
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/api/v1/socio/buscar/id/**"
+                                "/api/v1/socio/buscar/id/**",
+                                "/api/v1/socio/cuotas/*"
                         ).hasAnyRole("ADMIN", "RECEPCION", "SOCIO")
 
                         .requestMatchers(

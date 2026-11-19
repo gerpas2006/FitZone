@@ -4,7 +4,9 @@ import es.safareyes.fitzone.dto.*;
 import es.safareyes.fitzone.model.Estado;
 import es.safareyes.fitzone.service.SocioService;
 import jakarta.validation.Valid;
+import es.safareyes.fitzone.model.Usuario;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -76,7 +78,11 @@ public class SocioController {
     }
 
     @GetMapping("/buscar/id/{id}")
-    public ResponseEntity<SocioResponseDto> fichaSocioId(@PathVariable UUID id){
+    public ResponseEntity<SocioResponseDto> fichaSocioId(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal Usuario usuario
+    ){
+        socioService.comprobarAccesoPropio(usuario, id);
         return ResponseEntity.ok(SocioResponseDto.of(socioService.buscarFichaSocio(id)));
     }
 
@@ -93,8 +99,10 @@ public class SocioController {
     @GetMapping("/cuotas/{id}")
     public ResponseEntity<Page<CuotaResponseDto>> listarCuotasSocio(
             @PathVariable UUID id,
-            Pageable pageable
+            @PageableDefault(size = 10, sort = {"anio", "mes"}, direction = Sort.Direction.DESC) Pageable pageable,
+            @AuthenticationPrincipal Usuario usuario
     ) {
+        socioService.comprobarAccesoPropio(usuario, id);
         Page<CuotaResponseDto> cuotas = socioService
                 .obtenerHistorialPorSocio(id, pageable)
                 .map(CuotaResponseDto::of);

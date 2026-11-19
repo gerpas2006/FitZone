@@ -9,7 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.transaction.TransactionSystemException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
@@ -96,7 +99,7 @@ public class GlobalExceptionHandler {
                 "timestamp", Instant.now().toString(),
                 "status", estado.value(),
                 "error", estado.getReasonPhrase(),
-                "message", mensaje
+                "message", mensaje != null ? mensaje : estado.getReasonPhrase()
         );
 
         return ResponseEntity
@@ -156,6 +159,56 @@ public class GlobalExceptionHandler {
         return respuesta(
                 HttpStatus.FORBIDDEN,
                 "No tienes permisos para acceder a este recurso"
+        );
+    }
+
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, Object>> manejarArgumentoIlegal(
+            IllegalArgumentException exception
+    ) {
+        return respuesta(HttpStatus.BAD_REQUEST, exception.getMessage());
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Map<String, Object>> manejarViolacionDeRestricciones(
+            ConstraintViolationException exception
+    ) {
+        String mensaje = exception.getConstraintViolations()
+                .stream()
+                .map(this::mensajeDeViolacion)
+                .collect(Collectors.joining("; "));
+
+        return respuesta(HttpStatus.BAD_REQUEST, mensaje);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<Map<String, Object>> manejarParametroObligatorio(
+            MissingServletRequestParameterException exception
+    ) {
+        return respuesta(
+                HttpStatus.BAD_REQUEST,
+                "Falta el parámetro obligatorio: " + exception.getParameterName()
+        );
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Map<String, Object>> manejarTipoDeParametro(
+            MethodArgumentTypeMismatchException exception
+    ) {
+        return respuesta(
+                HttpStatus.BAD_REQUEST,
+                "El parámetro '" + exception.getName() + "' no tiene un formato válido"
+        );
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, Object>> manejarCuerpoIlegible(
+            HttpMessageNotReadableException exception
+    ) {
+        return respuesta(
+                HttpStatus.BAD_REQUEST,
+                "El cuerpo de la petición no es válido"
         );
     }
 
