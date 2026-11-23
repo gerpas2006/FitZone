@@ -203,49 +203,4 @@ public class SecurityConfig {
     ) {
         return new ProviderManager(authenticationProvider);
     }
-
-    @PostConstruct
-    void init() {
-        if (usuarioRepository.count() == 0) {
-            usuarioRepository.save(Usuario.builder()
-                    .username("admin")
-                    .apellidos("admin")
-                    .nombre("Admin Principal")
-                    .password(passwordEncoder.encode("admin123"))
-                    .rol(Rol.ADMIN)
-                    .build());
-
-            usuarioRepository.save(Usuario.builder()
-                    .username("angel")
-                    .nombre("Ángel")
-                    .apellidos("Naranjo")
-                    .password(passwordEncoder.encode("angel123thebest"))
-                    .rol(Rol.ADMIN)
-                    .build());
-
-            usuarioRepository.save(Usuario.builder()
-                    .username("luismi")
-                    .nombre("Luismi")
-                    .apellidos("López")
-                    .password(passwordEncoder.encode("luismi123ermejo"))
-                    .rol(Rol.ADMIN)
-                    .build());
-
-            usuarioRepository.save(Usuario.builder()
-                    .username("miguel")
-                    .nombre("Miguel")
-                    .apellidos("Campos")
-                    .password(passwordEncoder.encode("bocataManoloYa"))
-                    .rol(Rol.ADMIN)
-                    .build());
-
-            usuarioRepository.save(Usuario.builder()
-                    .username("user")
-                    .nombre("Pedro")
-                    .apellidos("Serrano")
-                    .password(passwordEncoder.encode("user123"))
-                    .rol(Rol.SOCIO)
-                    .build());
-        }
-    }
 }
