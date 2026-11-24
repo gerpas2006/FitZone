@@ -55,7 +55,7 @@ public interface SocioRepository extends JpaRepository<Socio, UUID>, JpaSpecific
     @EntityGraph(attributePaths = {"plan"})
     Optional<Socio> findWithPlanById(UUID id);
 
-    @EntityGraph(attributePaths = {"plan"})
+    @EntityGraph(attributePaths = {"usuario", "plan"})
     Optional<Socio> findByUsuario_Id(UUID usuarioId);
 
     @EntityGraph(attributePaths = {"usuario", "plan"})
@@ -79,5 +79,4 @@ public interface SocioRepository extends JpaRepository<Socio, UUID>, JpaSpecific
 
 
 }
-
 

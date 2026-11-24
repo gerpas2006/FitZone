@@ -2,6 +2,7 @@ package es.safareyes.fitzone.controller;
 
 import es.safareyes.fitzone.dto.*;
 import es.safareyes.fitzone.model.Estado;
+import es.safareyes.fitzone.model.Socio;
 import es.safareyes.fitzone.service.SocioService;
 import jakarta.validation.Valid;
 import es.safareyes.fitzone.model.Usuario;
@@ -25,6 +26,13 @@ public class SocioController {
 
     private final SocioService socioService;
 
+    @GetMapping("/mi-perfil")
+    public ResponseEntity<SocioPerfilResponseDto> miPerfil(
+            @AuthenticationPrincipal Usuario usuario
+    ) {
+        Socio socio = socioService.buscarPerfilPorUsuario(usuario.getId());
+        return ResponseEntity.ok(SocioPerfilResponseDto.of(socio));
+    }
 
     @GetMapping("/buscar/dni/{dni}")
     public ResponseEntity<SocioResponseDto> buscarPorDni(@PathVariable String dni){
