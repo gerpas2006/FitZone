@@ -76,6 +76,13 @@ public class SocioService {
                 new ElementoNoEncontrado("No se ha encontrado ninguna ficha del socio con ese id"));
     }
 
+    public Socio buscarPerfilPorUsuario(UUID usuarioId) {
+        return socioRepository.findByUsuario_Id(usuarioId)
+                .orElseThrow(() -> new ElementoNoEncontrado(
+                        "No se ha encontrado la ficha del socio asociado a este usuario"
+                ));
+    }
+
     @Transactional
     public Socio editarSocio(UUID id, SocioEditarDto datosSocio) {
         Socio socio = socioRepository.findWithPlanAndUsuarioById(id)
