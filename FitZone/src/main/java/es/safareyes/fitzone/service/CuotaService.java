@@ -140,6 +140,7 @@ public class CuotaService {
             cuotasCreadas++;
         }
 
+
         if (cuotasCreadas == 0) {
             throw new IllegalStateException("Ya están creadas las cuotas de este mes.");
         }
