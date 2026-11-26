@@ -37,6 +37,7 @@ public class ReservaService {
             Usuario usuario,
             CrearReservaRequest request
     ) {
+        // Las reservas se asocian al socio del usuario autenticado.
         Socio socio = socioRepository
                 .findByUsuario_Id(usuario.getId())
                 .orElseThrow(() -> new ElementoNoEncontrado(
@@ -49,6 +50,7 @@ public class ReservaService {
                         "No se ha encontrado la actividad"
                 ));
 
+        // Valida todas las condiciones antes de guardar la reserva.
         validarSocio(socio);
         validarActividadFutura(actividad);
         validarCuotaPagadaEsteMes(socio);
@@ -69,6 +71,7 @@ public class ReservaService {
 
     private void validarSocio(Socio socio) {
         if (socio.getEstado() != Estado.ACTIVO) {
+            // Los socios inactivos no pueden reservar actividades.
             rechazar("El socio está inactivo");
         }
 
@@ -99,6 +102,7 @@ public class ReservaService {
                 ));
 
         if (cuota.getEstadoCuota() != EstadoCuota.PAGADA) {
+            // Una cuota pendiente impide crear la reserva.
             rechazar("El socio tiene la cuota del mes pendiente");
         }
     }
@@ -113,6 +117,7 @@ public class ReservaService {
         );
 
         if (yaExiste) {
+            // Evita duplicar la reserva del mismo socio y actividad.
             rechazar("El socio ya tiene una reserva para esta actividad");
         }
     }
@@ -125,6 +130,7 @@ public class ReservaService {
                 );
 
         if (reservasFuturas >= 3) {
+            // Cada socio puede mantener como máximo tres reservas futuras.
             rechazar("El socio ya tiene el máximo de 3 reservas futuras");
         }
     }
@@ -134,6 +140,7 @@ public class ReservaService {
                 .contarAforoActual(actividad.getId());
 
         if (reservasActuales >= actividad.getAforoMaximo()) {
+            // No se aceptan más reservas cuando se alcanza el aforo.
             rechazar("No quedan plazas disponibles para la actividad");
         }
     }

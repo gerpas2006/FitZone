@@ -49,6 +49,7 @@ public class CuotaService {
                 ));
 
         if (cuota.getEstadoCuota() == EstadoCuota.PAGADA) {
+            // Evita volver a registrar un pago ya confirmado.
             throw new IllegalStateException("La cuota ya está pagada");
         }
 
@@ -70,12 +71,14 @@ public class CuotaService {
 
     private void validarPeriodo(Integer mes, Integer anio) {
         if (mes == null || mes < 1 || mes > 12) {
+            // El mes debe ser un valor válido del calendario.
             throw new IllegalArgumentException(
                     "El mes debe estar comprendido entre 1 y 12"
             );
         }
 
         if (anio == null || anio < 2000) {
+            // Rechaza años nulos o anteriores al rango admitido.
             throw new IllegalArgumentException(
                     "El año no es válido"
             );
@@ -92,6 +95,7 @@ public class CuotaService {
 
         List<Socio> socios = socioRepository.findAll();
 
+        // Desactiva socios activos que acumulan dos o más cuotas pendientes.
         for (Socio socio : socios) {
             cuotasPendientes = cuotaRepository
                     .countBySocioIdAndEstadoCuota(
@@ -106,6 +110,7 @@ public class CuotaService {
             }
         }
 
+        // Genera una sola cuota por socio y periodo, solo para socios activos.
         for (Socio socio : socios) {
             if (socio.getEstado() != Estado.ACTIVO) {
                 continue;
@@ -119,6 +124,7 @@ public class CuotaService {
                     );
 
             if (yaTieneCuota) {
+                // No duplica cuotas para el mismo socio, mes y año.
                 continue;
             }
 
@@ -134,6 +140,9 @@ public class CuotaService {
             cuotasCreadas++;
         }
 
+        if (cuotasCreadas == 0) {
+            throw new IllegalStateException("Ya están creadas las cuotas de este mes.");
+        }
         return new GenerarCuotasResponse(
                 mes,
                 anio,

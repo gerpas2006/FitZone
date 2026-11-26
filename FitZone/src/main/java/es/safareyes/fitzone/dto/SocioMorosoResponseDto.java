@@ -22,20 +22,19 @@ public record SocioMorosoResponseDto(
         List<CuotaPendienteDto> mesesPendientes
 ) {
     public static SocioMorosoResponseDto of(Socio socio) {
+        var usuario = socio.getUsuario();
+
         List<CuotaPendienteDto> cuotasPendientes = socio.getCuotas()
                 .stream()
                 .filter(cuota -> cuota.getEstadoCuota() == EstadoCuota.PENDIENTE)
-                .map(cuota -> new CuotaPendienteDto(
-                        cuota.getMes(),
-                        cuota.getAnio()
-                ))
+                .map(cuota -> new CuotaPendienteDto(cuota.getMes(), cuota.getAnio()))
                 .toList();
 
         return new SocioMorosoResponseDto(
                 socio.getId(),
                 socio.getDni(),
-                socio.getUsuario().getNombre(),
-                socio.getUsuario().getApellidos(),
+                usuario != null ? usuario.getNombre() : null,
+                usuario != null ? usuario.getApellidos() : null,
                 socio.getEmail(),
                 socio.getTelefono(),
                 socio.getFechaAlta(),

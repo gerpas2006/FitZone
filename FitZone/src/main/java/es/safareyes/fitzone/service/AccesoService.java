@@ -36,12 +36,10 @@ public class AccesoService {
     private final SocioRepository socioRepository;
     private final CuotaRepository cuotaRepository;
 
-    /**
-     * RN-05 / RN-06: valida la entrada y registra SIEMPRE el intento
-     * (si el DNI existe). Un DNI inexistente devuelve 404 y no se registra.
-     */
+
     @Transactional
     public Acceso tornoEntrada(String dni) {
+        // Sin un socio registrado no se puede guardar el intento.
         Socio socio = socioRepository.findByDni(normalizarDni(dni))
                 .orElseThrow(() -> new ElementoNoEncontrado(
                         "No se ha encontrado el socio con ese DNI"
@@ -53,10 +51,13 @@ public class AccesoService {
         acceso.setFechaHoraSalida(null);
         acceso.setResultado(false);
 
+        // Se comprueban las causas en orden y se devuelve el primer rechazo.
         String motivo = motivoRechazo(socio);
 
         if (motivo != null) {
+            // Conserva el motivo para que el rechazo quede explicado.
             acceso.setMotivoRechazo(motivo);
+            // También se guarda el intento rechazado en el historial.
             return accesoRepository.save(acceso);
         }
 
@@ -79,6 +80,7 @@ public class AccesoService {
                 EstadoCuota.PAGADA
         );
         if (!cuotaPagada) {
+            // Sin la cuota del mes pagada, se bloquea la entrada.
             return CUOTA_PENDIENTE;
         }
 
@@ -93,9 +95,7 @@ public class AccesoService {
         return null;
     }
 
-    /**
-     * RN-07: una salida sin entrada abierta devuelve 422.
-     */
+
     @Transactional
     public AccesoResponseDto tornoSalida(String dni) {
         Socio socio = socioRepository.findByDni(normalizarDni(dni))
@@ -103,6 +103,7 @@ public class AccesoService {
                         "No se ha encontrado el socio con ese DNI"
                 ));
 
+        // Sin una entrada abierta, no hay salida que registrar.
         Acceso accesoAbierto = accesoRepository
                 .findAccesosAbiertosBySocio(socio)
                 .stream()
@@ -117,9 +118,7 @@ public class AccesoService {
         return AccesoResponseDto.of(accesoRepository.save(accesoAbierto));
     }
 
-    /**
-     * RN-07: aforo = entradas permitidas del día sin salida registrada.
-     */
+
     public long aforoActual() {
         LocalDate hoy = LocalDate.now();
         return accesoRepository.countEntradasAbiertasDelDia(
