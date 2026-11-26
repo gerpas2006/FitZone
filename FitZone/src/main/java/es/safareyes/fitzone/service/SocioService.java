@@ -42,6 +42,7 @@ public class SocioService {
 
 
     public Page<Socio> filtrar(Pageable pageable, SocioFIltradoDto filtro) {
+        // Combina los filtros recibidos y pagina los resultados.
         Page<Socio> sociosFiltrados = socioRepository.findBy(
                 PredicateSpecification.allOf(
                         SocioFilter.filtrarPorEstado(filtro.estado()),
@@ -92,6 +93,7 @@ public class SocioService {
 
         if (datosSocio.email() != null) {
             if (socioRepository.existsByEmailIgnoreCaseAndIdNot(datosSocio.email(), id)) {
+                // El email debe ser único entre los demás socios.
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "El email ya está registrado");
             }
             socio.setEmail(datosSocio.email());
@@ -99,17 +101,18 @@ public class SocioService {
 
         if (datosSocio.telefono() != null) {
             if (socioRepository.existsByTelefonoAndIdNot(datosSocio.telefono(), id)) {
+                // El teléfono tampoco puede pertenecer a otro socio.
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "El teléfono ya está registrado");
             }
             socio.setTelefono(datosSocio.telefono());
         }
 
         if (datosSocio.matricula() != null) {
-            // Una matrícula vacía ("") elimina la matrícula del socio
             String matricula = datosSocio.matricula().isBlank()
                     ? null
                     : datosSocio.matricula().trim().toUpperCase();
             if (matricula != null && socioRepository.existsByMatriculaAndIdNot(matricula, id)) {
+                // Comprueba duplicados solo si se está asignando una matrícula.
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "La matrícula ya está registrada");
             }
             socio.setMatricula(matricula);
@@ -144,19 +147,18 @@ public class SocioService {
         return socioRepository.save(socio);
     }
 
-    /**
-     * Un usuario con rol SOCIO solo puede consultar sus propios datos.
-     */
     public void comprobarAccesoPropio(Usuario usuario, UUID socioId) {
         if (usuario == null || usuario.getRol() != Rol.SOCIO) {
             return;
         }
 
+        // Un socio solo puede consultar su propia ficha.
         boolean esPropio = socioRepository.findByUsuario_Id(usuario.getId())
                 .map(socio -> socio.getId().equals(socioId))
                 .orElse(false);
 
         if (!esPropio) {
+            // Bloquea el acceso a fichas de otros socios.
             throw new AccessDeniedException("Solo puedes consultar tus propios datos");
         }
     }

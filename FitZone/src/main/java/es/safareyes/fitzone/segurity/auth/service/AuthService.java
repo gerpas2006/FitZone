@@ -1,11 +1,14 @@
 package es.safareyes.fitzone.segurity.auth.service;
 
 import es.safareyes.fitzone.exception.ElementoNoEncontrado;
+import es.safareyes.fitzone.model.Cuota;
 import es.safareyes.fitzone.model.Estado;
+import es.safareyes.fitzone.model.EstadoCuota;
 import es.safareyes.fitzone.model.Plan;
 import es.safareyes.fitzone.model.Rol;
 import es.safareyes.fitzone.model.Socio;
 import es.safareyes.fitzone.model.Usuario;
+import es.safareyes.fitzone.repository.CuotaRepository;
 import es.safareyes.fitzone.repository.PlanRepository;
 import es.safareyes.fitzone.repository.SocioRepository;
 import es.safareyes.fitzone.repository.UsuarioRepository;
@@ -25,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +36,7 @@ public class AuthService {
 
     private final UsuarioRepository usuarioRepository;
     private final SocioRepository socioRepository;
+    private final CuotaRepository cuotaRepository;
     private final PlanRepository planRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -89,6 +94,7 @@ public class AuthService {
                 .plan(plan)
                 .build();
 
+        // Se guarda el socio antes de crear la cuenta asociada.
         socioRepository.save(socio);
 
         Usuario usuario = Usuario.builder()
@@ -102,7 +108,19 @@ public class AuthService {
 
         socio.setUsuario(usuario);
 
-        return usuarioRepository.save(usuario);
+        Usuario usuarioRegistrado = usuarioRepository.save(usuario);
+
+        YearMonth periodoActual = YearMonth.now();
+        Cuota cuota = new Cuota();
+        cuota.setMes(periodoActual.getMonthValue());
+        cuota.setAnio(periodoActual.getYear());
+        cuota.setImporte(plan.getPrecioMensual());
+        cuota.setEstadoCuota(EstadoCuota.PENDIENTE);
+        cuota.setSocio(socio);
+        cuota.setPlan(plan);
+        cuotaRepository.save(cuota);
+
+        return usuarioRegistrado;
     }
 
     @Transactional
